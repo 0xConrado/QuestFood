@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/common_google_signin_btn_icon_light_normal_background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/register_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/register_title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/black" />
+
+        <!-- Close Button -->
+        <ImageView
+            android:id="@+id/closeButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/xmark"
+            android:contentDescription="@string/close"
+            android:tint="@color/gray" />
+    </LinearLayout>
+
+    <!-- Profile Image -->
+    <FrameLayout
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp">
+
+        <!-- Imagem do perfil -->
+        <ImageView
+            android:id="@+id/register_profile_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/user_default"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/profile_picture"
+            android:background="@drawable/circle_background" />
+
+        <!-- Botão de upload sobreposto -->
+        <ImageView
+            android:id="@+id/upload_profile_image_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="12dp"
+            android:src="@drawable/plus_circle"
+            android:contentDescription="@string/select_image"
+            android:background="@drawable/circle_background" />
+    </FrameLayout>
+
+
+    <!-- Input Fields -->
+    <EditText
+        android:id="@+id/register_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/username"
+        android:background="@drawable/input_bar_background"
+        android:drawableStart="@drawable/user"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:layout_marginTop="16dp"
+        style="@style/DefaultEditText"/>
+
+    <EditText
+        android:id="@+id/register_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/email"
+        android:background="@drawable/input_bar_background"
+        android:drawableStart="@drawable/mail"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"
+        android:inputType="textEmailAddress"
+        style="@style/DefaultEditText"/>
+
+    <EditText
+        android:id="@+id/register_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/phone"
+        android:background="@drawable/input_bar_background"
+        android:drawableStart="@drawable/phone"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"
+        android:inputType="phone"
+        style="@style/DefaultEditText"/>
+
+    <EditText
+        android:id="@+id/register_date_of_birth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/birthday"
+        android:background="@drawable/input_bar_background"
+        android:drawableStart="@drawable/calendar"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"
+        android:focusable="false"
+        style="@style/DefaultEditText"/>
+
+
+    <EditText
+        android:id="@+id/register_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/password"
+        android:background="@drawable/input_bar_background"
+        android:drawableStart="@drawable/password_cursor"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"
+        android:inputType="textPassword"
+        style="@style/DefaultEditText"/>
+
+    <EditText
+        android:id="@+id/register_confirm_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/confirm_password"
+        android:background="@drawable/input_bar_background"
+        android:drawableStart="@drawable/password_check"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"
+        android:inputType="textPassword"
+        style="@style/DefaultEditText"/>
+
+    <!-- Register Button -->
+    <Button
+        android:id="@+id/register_submit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_account"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/white"
+        android:padding="12dp" />
+
+</LinearLayout>

@@ -1,0 +1,73 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@drawable/banner_background"
+    android:layout_marginBottom="16dp">
+
+    <!-- Imagem do avatar -->
+    <ImageView
+        android:id="@+id/profileImage"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/user_default"
+        android:scaleType="centerCrop"
+        android:background="@drawable/circle_background"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/profile_picture" />
+
+    <!-- Nome e título do usuário -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/profileImage"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp">
+
+        <TextView
+            android:id="@+id/profile_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nome de Usuário"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/profile_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Título"
+            android:textSize="14sp"
+            android:textColor="#666666" />
+    </LinearLayout>
+
+    <!-- Barra de nível -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/profileImage"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/levelText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lvl 1"
+            android:textSize="14sp"
+            android:textColor="#000000" />
+
+        <ProgressBar
+            android:id="@+id/levelProgressBar"
+            android:layout_width="0dp"
+            android:layout_height="16dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:progress="25"
+            android:progressTint="#FF5722"
+            android:backgroundTint="#EEEEEE"
+            style="@android:style/Widget.ProgressBar.Horizontal" />
+    </LinearLayout>
+</RelativeLayout>

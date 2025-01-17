@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/banner_background"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/categoryTitleEditText"
+        android:inputType="textCapSentences|textMultiLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Título da Categoria"
+        style="@style/DefaultEditText" />
+
+    <EditText
+        android:id="@+id/categorySubtitleEditText"
+        android:inputType="textCapSentences|textMultiLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Subtítulo da Categoria"
+        android:layout_marginTop="8dp"
+        style="@style/DefaultEditText" />
+
+    <EditText
+        android:id="@+id/categoryImageUrlEditText"
+        android:inputType="textCapSentences|textMultiLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="URL da Imagem"
+        android:layout_marginTop="8dp"
+        style="@style/DefaultEditText" />
+
+    <ImageView
+        android:id="@+id/categoryImagePreview"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerCrop"
+        android:background="@android:color/darker_gray" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/addCategoryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Adicionar"
+            android:backgroundTint="@color/green" />
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancelar"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+</LinearLayout>

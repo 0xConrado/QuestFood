@@ -1,0 +1,112 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <!-- Logo do aplicativo no topo -->
+    <ImageView
+        android:id="@+id/appLogo"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:layout_margin="16dp"
+        android:src="@drawable/logo"
+        android:scaleType="centerInside"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/editTextEmail" />
+
+    <!-- Campo de email -->
+    <EditText
+        android:id="@+id/editTextEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:background="@drawable/input_bar_background"
+        app:layout_constraintTop_toBottomOf="@id/appLogo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        style="@style/DefaultEditText" />
+
+    <!-- Campo de senha -->
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:background="@drawable/input_bar_background"
+        app:layout_constraintTop_toBottomOf="@id/editTextEmail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        style="@style/DefaultEditText" />
+
+    <!-- Botão de login com email/senha -->
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/login"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/editTextPassword"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        style="@style/DefaultButton" />
+
+    <!-- Botão de login com Google -->
+    <Button
+        android:id="@+id/buttonLoginGoogle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/login_with_google"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/buttonLogin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        style="@style/GoogleButton" />
+
+    <!-- Botão de login anônimo -->
+    <Button
+        android:id="@+id/buttonLoginAnonimo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/continue_as_guest"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/buttonLoginGoogle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        style="@style/DefaultButton" />
+
+    <!-- Link para registro de nova conta -->
+    <TextView
+        android:id="@+id/textViewRegistrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_an_account"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/buttonLoginAnonimo"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        style="@style/DefaultTextView" />
+
+    <!-- Link para recuperar senha -->
+    <TextView
+        android:id="@+id/textViewEsqueceuSenha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/forgot_password"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/buttonLoginAnonimo"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+        style="@style/DefaultTextView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

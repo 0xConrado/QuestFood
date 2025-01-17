@@ -1,0 +1,64 @@
+<resources>
+
+    <style name="DefaultEditText">
+        <item name="android:background">@drawable/input_bar_background</item> <!-- Fundo padrão -->
+        <item name="android:padding">12dp</item> <!-- Padding -->
+        <item name="android:textColor">@color/black</item> <!-- Texto digitado -->
+        <item name="android:textColorHint">@color/gray
+        </item> <!-- Texto de dica (hint) padrão cinza -->
+        <item name="android:textSize">16sp</item> <!-- Tamanho da fonte -->
+    </style>
+
+    <!-- Estilo padrão para botões -->
+    <style name="DefaultButton">
+        <item name="android:background">@drawable/input_bar_background</item> <!-- Fundo padrão -->
+        <item name="android:padding">12dp</item> <!-- Padding -->
+        <item name="android:textColor">@color/white</item> <!-- Texto digitado -->
+        <item name="android:textColorHint">@color/black
+        </item> <!-- Texto de dica (hint) padrão cinza -->
+        <item name="android:textSize">16sp</item> <!-- Tamanho da fonte -->
+    </style>
+
+    <!-- Estilo padrão para botões -->
+    <style name="DefaultTextView">
+        <item name="android:padding">12dp</item> <!-- Padding -->
+        <item name="android:textColor">@color/black
+        </item> <!-- Texto de dica (hint) padrão cinza -->
+        <item name="android:textSize">28sp</item> <!-- Tamanho da fonte -->
+        <item name="android:textStyle">bold</item> <!-- Tamanho da fonte -->
+    </style>
+
+    <!-- Estilo para o botão Google -->
+    <style name="GoogleButton" parent="DefaultButton">
+        <item name="android:backgroundTint">@color/google_red</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:drawableLeft">@drawable/google</item>
+    </style>
+
+    <style name="FullScreenDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <!-- Tema personalizado para o DatePickerDialog -->
+    <style name="CustomDatePicker" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Cabeçalho vermelho -->
+        <item name="colorAccent">#FF0000</item>
+        <item name="colorOnPrimary">@color/black</item> <!-- Cores dos botões: CANCELAR e OK -->
+        <item name="android:textColorPrimary">#4D4D4D
+        </item> <!-- Cores dos números dos dias e da barra de Mês e Ano-->
+        <item name="android:textColorSecondary">@color/black
+        </item> <!-- cores dos dias D S T Q Q S S -->
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <style name="Widget.Theme.QuestFood.ButtonBar.Fullscreen" parent="">
+        <item name="android:background">@color/black_overlay</item>
+        <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
+    </style>
+
+
+</resources>
+

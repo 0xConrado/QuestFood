@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="top">
+
+    <!-- Profile Section -->
+    <include
+        android:id="@+id/home_profile_section"
+        layout="@layout/layout_profile_section" />
+
+    <!-- Menu Options -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/menu_options_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="0dp"
+        tools:listitem="@layout/menu_item" />
+
+    <!-- Include Navigation Bar -->
+</LinearLayout>
