@@ -1,6 +1,7 @@
 package com.quest.food.ui.popup
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.GenericTypeIndicator
 import com.quest.food.R
 
 class PopupAddressFragment : DialogFragment() {
@@ -39,7 +41,7 @@ class PopupAddressFragment : DialogFragment() {
             return null
         }
 
-        return inflater.inflate(R.layout.fragment_popup_address, container, false)
+        return inflater.inflate(R.layout.popup_address, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -77,9 +79,12 @@ class PopupAddressFragment : DialogFragment() {
     }
 
     private fun loadOrEnableFields(userId: String) {
-        val databaseReference = FirebaseDatabase.getInstance().getReference("addresses").child(userId)
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId).child("address")
+
         databaseReference.get().addOnSuccessListener { snapshot ->
-            val address = snapshot.value as? Map<String, Any>
+            val typeIndicator = object : GenericTypeIndicator<Map<String, Any>>() {}
+            val address = snapshot.getValue(typeIndicator) // Forma segura de extrair o mapa
+
             if (address != null) {
                 populateFields(address)
                 setFieldsEnabled(false)
@@ -88,8 +93,12 @@ class PopupAddressFragment : DialogFragment() {
                 setFieldsEnabled(true)
                 buttonSaveEditAddress.text = "Salvar"
             }
+        }.addOnFailureListener {
+            Toast.makeText(requireContext(), "Erro ao carregar endereço.", Toast.LENGTH_SHORT).show()
+            Log.e("PopupAddressFragment", "Erro ao buscar endereço: ${it.message}")
         }
     }
+
 
     private fun populateFields(address: Map<String, Any>) {
         editTextStreet.setText(address["street"] as? String ?: "")
@@ -126,7 +135,7 @@ class PopupAddressFragment : DialogFragment() {
     }
 
     private fun saveAddressToDatabase(userId: String) {
-        val databaseReference = FirebaseDatabase.getInstance().getReference("addresses").child(userId)
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId).child("address")
 
         val address = mapOf(
             "street" to editTextStreet.text.toString(),
@@ -145,6 +154,7 @@ class PopupAddressFragment : DialogFragment() {
             buttonSaveEditAddress.text = "Editar"
         }.addOnFailureListener {
             Toast.makeText(requireContext(), "Erro ao salvar o endereço.", Toast.LENGTH_SHORT).show()
+            Log.e("PopupAddressFragment", "Erro ao salvar endereço: ${it.message}")
         }
     }
 }

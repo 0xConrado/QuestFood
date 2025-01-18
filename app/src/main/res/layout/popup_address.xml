@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/common_google_signin_btn_icon_light_normal_background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Campo: Rua -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rua"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/black" />
+
+        <EditText
+            android:id="@+id/editTextStreet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Digite o nome da rua"
+            android:background="@drawable/input_bar_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            style="@style/DefaultEditText"/>
+
+        <!-- Campo: Número -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Número"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/black" />
+
+        <EditText
+            android:id="@+id/editTextNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Digite o número"
+            android:background="@drawable/input_bar_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            style="@style/DefaultEditText"/>
+
+        <!-- Campo: Complemento -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Complemento"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/black" />
+
+        <EditText
+            android:id="@+id/editTextComplement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Digite o complemento (opcional)"
+            android:background="@drawable/input_bar_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            style="@style/DefaultEditText"/>
+
+        <!-- Campo: Bairro -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bairro"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/black" />
+
+        <EditText
+            android:id="@+id/editTextNeighborhood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Digite o bairro"
+            android:background="@drawable/input_bar_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            style="@style/DefaultEditText"/>
+
+        <!-- Campo: Cidade -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cidade"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/black" />
+
+        <EditText
+            android:id="@+id/editTextCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Digite a cidade"
+            android:background="@drawable/input_bar_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            style="@style/DefaultEditText"/>
+
+        <!-- Campo: Estado -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Estado"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/black" />
+
+        <EditText
+            android:id="@+id/editTextState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Digite o estado"
+            android:background="@drawable/input_bar_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            style="@style/DefaultEditText"/>
+
+        <!-- Campo: CEP -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CEP"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/black" />
+
+        <EditText
+            android:id="@+id/editTextPostalCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Digite o CEP"
+            android:background="@drawable/input_bar_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            style="@style/DefaultEditText"/>
+
+        <!-- Tipo de Endereço -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tipo de Endereço"
+            android:layout_marginBottom="8dp"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Casa"
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:id="@+id/radioWork"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trabalho"
+                android:layout_marginStart="16dp"
+                android:textColor="@color/black" />
+        </RadioGroup>
+
+        <!-- Botão Salvar -->
+        <Button
+            android:id="@+id/buttonSaveAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/black"
+            android:text="Salvar"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+</ScrollView>
