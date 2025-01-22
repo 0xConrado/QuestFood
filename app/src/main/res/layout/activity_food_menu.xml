@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <!-- Barra de Busca -->
+    <EditText
+        android:id="@+id/searchBar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/input_bar_background"
+        android:hint="Digite para buscar um item"
+        android:drawableStart="@drawable/search"
+        android:paddingStart="16dp"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:inputType="text"
+        android:drawablePadding="12dp" />
+
+    <!-- Header da Categoria -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:padding="16dp">
+
+        <!-- Imagem da Categoria -->
+        <ImageView
+            android:id="@+id/categoryImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:background="@drawable/rounded_corner"
+            android:clipToOutline="true" />
+
+        <!-- Título da Categoria -->
+        <TextView
+            android:id="@+id/categoryTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Título da Categoria"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="30dp" />
+
+        <!-- Subtítulo da Categoria -->
+        <TextView
+            android:id="@+id/categorySubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Subtítulo da Categoria"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="8dp" />
+    </RelativeLayout>
+
+    <!-- Lista de Itens da Categoria -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/foodMenuRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:scrollbars="vertical" />
+
+</LinearLayout>

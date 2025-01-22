@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.googleServices)
     id("org.jetbrains.kotlin.kapt") // Habilita o plugin Kotlin KAPT
+    id("kotlin-parcelize") // Ativa o suporte ao @Parcelize
 }
 
 android {

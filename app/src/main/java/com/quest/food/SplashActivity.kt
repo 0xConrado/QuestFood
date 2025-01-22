@@ -1,32 +1,30 @@
 package com.quest.food
 
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.security.MessageDigest
+import com.quest.food.viewmodel.SplashViewModel
 
 class SplashActivity : AppCompatActivity() {
 
-    private val splashDuration: Long = 3000L // 3 segundos
-    private val splashScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private val splashViewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        splashScope.launch {
-            delay(splashDuration)
-            startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
-            finish() // Fecha a SplashActivity para não voltar a ela ao pressionar "Voltar"
-        }
+        // Verifica autenticação e redireciona após 2 segundos
+        Handler(Looper.getMainLooper()).postDelayed({
+            val nextActivity = if (splashViewModel.isUserLoggedIn()) {
+                MainActivity::class.java
+            } else {
+                LoginActivity::class.java
+            }
+            startActivity(Intent(this, nextActivity))
+            finish()
+        }, 2000) // Delay de 2 segundos para a Splash Screen
     }
 }

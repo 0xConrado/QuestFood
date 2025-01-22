@@ -1,178 +1,112 @@
 package com.quest.food.ui.profile
 
-import android.graphics.BitmapFactory
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.quest.food.Address
-import com.quest.food.MenuAdapter
-import com.quest.food.MenuItem
+import com.google.firebase.database.*
+import com.quest.food.LoginActivity
 import com.quest.food.R
+import com.quest.food.databinding.FragmentProfileBinding
 import com.quest.food.User
-import com.quest.food.ui.popup.PopupAddressFragment
-import java.io.File
+import com.quest.food.viewmodel.MainViewModel
 
 class ProfileFragment : Fragment() {
 
-    private var profileUserName: TextView? = null
-    private var profileTitle: TextView? = null
-    private var profileLevelText: TextView? = null
-    private var profileProgressBar: ProgressBar? = null
-    private var profileImageView: ImageView? = null
-    private var headerTitleText: TextView? = null
-    private var menuRecyclerView: RecyclerView? = null
+    private var _binding: FragmentProfileBinding? = null
+    private val binding get() = _binding!!
+    private val mainViewModel: MainViewModel by viewModels()
 
-    private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
+    private lateinit var database: DatabaseReference
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        try {
-            profileUserName = view.findViewById(R.id.profile_user_name)
-            profileTitle = view.findViewById(R.id.profile_title)
-            profileLevelText = view.findViewById(R.id.levelText)
-            profileProgressBar = view.findViewById(R.id.levelProgressBar)
-            profileImageView = view.findViewById(R.id.profileImage)
-            headerTitleText = view.findViewById(R.id.title_text)
-            menuRecyclerView = view.findViewById(R.id.menu_options_list)
-        } catch (e: Exception) {
-            Log.e("ProfileFragment", "Erro ao inicializar Views: ${e.message}")
-            return
-        }
-
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().getReference("users")
 
-        val navController = findNavController()
-        val currentDestination = navController.currentDestination
-        headerTitleText?.text = currentDestination?.label ?: "Default Title"
+        // Carregar dados do usuário
+        loadUserData()
 
-        setupMenu()
+        // Observar mudanças no usuário para redirecionar após logout
+        mainViewModel.user.observe(viewLifecycleOwner, Observer { user ->
+            if (user == null) navigateToLogin()
+        })
 
-        if (auth.currentUser == null) {
-            Toast.makeText(requireContext(), "Erro: Usuário não está logado.", Toast.LENGTH_SHORT).show()
-            return
+        // Configurar botão de logout
+        binding.buttonLogout.setOnClickListener {
+            mainViewModel.logout()
         }
-
-        if (auth.currentUser?.isAnonymous == true) {
-            setupGuestUser()
-        } else {
-            loadUserData()
-            loadUserAddress()
-        }
-    }
-
-    private fun setupMenu() {
-        menuRecyclerView?.apply {
-            val menuItems = listOf(
-                MenuItem(R.drawable.map_pin, getString(R.string.my_address)),
-                MenuItem(R.drawable.heart, getString(R.string.wishlist)),
-                MenuItem(R.drawable.page, getString(R.string.order_history)),
-                MenuItem(R.drawable.credit_card, getString(R.string.cards)),
-                MenuItem(R.drawable.password_cursor, getString(R.string.manage_passwords)),
-                MenuItem(R.drawable.secure_window, getString(R.string.security)),
-                MenuItem(R.drawable.settings, getString(R.string.settings))
-            )
-
-            val adapter = MenuAdapter(menuItems) { menuItem ->
-                when (menuItem.title) {
-                    getString(R.string.my_address) -> showAddressPopup()
-                }
-            }
-            layoutManager = LinearLayoutManager(requireContext())
-            this.adapter = adapter
-        }
-    }
-
-    private fun showAddressPopup() {
-        val addressPopup = PopupAddressFragment()
-        addressPopup.show(parentFragmentManager, "AddressPopup")
-    }
-
-    private fun setupGuestUser() {
-        profileUserName?.text = "Guest"
-        profileTitle?.text = "Modo Visitante"
-        profileLevelText?.text = "Lvl 0"
-        profileProgressBar?.progress = 0
-        profileImageView?.setImageResource(R.drawable.user_default)
     }
 
     private fun loadUserData() {
-        val userId = auth.currentUser?.uid
-        if (userId.isNullOrEmpty()) {
-            Log.e("ProfileFragment", "Usuário não está logado.")
-            return
-        }
+        val userId = auth.currentUser?.uid ?: return
 
         database.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                if (!isAdded || _binding == null) return // Evita crashes
+
                 val user = snapshot.getValue(User::class.java)
                 if (user != null) {
-                    profileUserName?.text = user.username
-                    profileTitle?.text = user.title
-                    profileLevelText?.text = "Lvl ${user.level}"
-                    profileProgressBar?.progress = user.levelProgress
-
-                    val imagePath = user.profileImagePath
-                    if (!imagePath.isNullOrEmpty()) {
-                        val imageFile = File(imagePath)
-                        if (imageFile.exists()) {
-                            val bitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
-                            profileImageView?.setImageBitmap(bitmap)
-                        } else {
-                            profileImageView?.setImageResource(R.drawable.user_default)
-                            Toast.makeText(requireContext(), "Imagem de perfil não encontrada localmente.", Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        profileImageView?.setImageResource(R.drawable.user_default)
-                    }
-                } else {
-                    Log.e("ProfileFragment", "Usuário não encontrado no banco de dados.")
+                    updateProfileUI(user)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Erro ao carregar dados do usuário: ${error.message}", Toast.LENGTH_SHORT).show()
+                // Se der erro, mostrar dados padrão
+                showGuestUser()
             }
         })
     }
 
-    private fun loadUserAddress() {
-        val userId = auth.currentUser?.uid ?: return
-        val databaseReference = database.child(userId).child("address")
+    private fun updateProfileUI(user: User) {
+        binding.homeProfileSection.apply {
+            profileUserName.text = user.username
+            profileTitle.text = user.title
+            levelText.text = "Lvl ${user.level}"
+            levelProgressBar.progress = user.levelProgress
 
-        databaseReference.get().addOnSuccessListener { snapshot ->
-            val address = snapshot.getValue(Address::class.java)
-            if (address != null) {
-                Toast.makeText(requireContext(), "Endereço carregado: ${address.street}", Toast.LENGTH_SHORT).show()
-            } else {
-                Log.e("ProfileFragment", "Endereço não encontrado no banco de dados.")
-            }
-        }.addOnFailureListener {
-            Toast.makeText(requireContext(), "Erro ao carregar endereço.", Toast.LENGTH_SHORT).show()
+            // Carregar imagem do perfil corretamente
+            Glide.with(this@ProfileFragment)
+                .load(user.profileImagePath)
+                .placeholder(R.drawable.user_default)
+                .into(profileImage)
         }
+    }
+
+    private fun showGuestUser() {
+        binding.homeProfileSection.apply {
+            profileUserName.text = "Visitante"
+            profileTitle.text = "Modo Anônimo"
+            levelText.text = "Lvl 0"
+            levelProgressBar.progress = 0
+            profileImage.setImageResource(R.drawable.user_default) // Define imagem padrão
+        }
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent(requireActivity(), LoginActivity::class.java)
+        startActivity(intent)
+        requireActivity().finish()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
