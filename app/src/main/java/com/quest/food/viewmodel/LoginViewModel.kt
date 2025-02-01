@@ -7,10 +7,12 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.*
 
 class LoginViewModel : ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().getReference("users")
 
     private val _user = MutableLiveData<FirebaseUser?>()
     val user: LiveData<FirebaseUser?> get() = _user
@@ -54,32 +56,40 @@ class LoginViewModel : ViewModel() {
 
     fun loginWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        _loading.value = true
+        auth.signInWithCredential(credential).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val firebaseUser = auth.currentUser
+                firebaseUser?.let { user ->
+                    val userRef = database.child(user.uid)
 
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            // O usuário já está logado, vincular a conta do Google ao login existente
-            currentUser.linkWithCredential(credential)
-                .addOnCompleteListener { task ->
-                    _loading.value = false
-                    if (task.isSuccessful) {
-                        _user.value = auth.currentUser
-                        Log.d("LoginViewModel", "Conta do Google vinculada com sucesso!")
-                    } else {
-                        _errorMessage.value = "Erro ao vincular conta do Google: ${task.exception?.message}"
-                    }
+                    // Verifica se o usuário já existe no banco de dados
+                    userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (!snapshot.exists()) {
+                                val newUser = mapOf(
+                                    "username" to (user.displayName ?: "Usuário"),
+                                    "email" to (user.email ?: ""),
+                                    "phone" to (user.phoneNumber ?: ""),
+                                    "birthday" to "",
+                                    "title" to "Novato",
+                                    "level" to 1,
+                                    "levelProgress" to 0,
+                                    "profileImagePath" to (user.photoUrl?.toString() ?: ""),
+                                    "role" to "user"
+                                )
+                                userRef.setValue(newUser)
+                            }
+                            _user.postValue(user)
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            _errorMessage.postValue("Erro ao buscar usuário no Firebase: ${error.message}")
+                        }
+                    })
                 }
-        } else {
-            // Usuário não logado, realizar login normal com Google
-            auth.signInWithCredential(credential)
-                .addOnCompleteListener { task ->
-                    _loading.value = false
-                    if (task.isSuccessful) {
-                        _user.value = auth.currentUser
-                    } else {
-                        _errorMessage.value = "Erro no login com Google: ${task.exception?.message}"
-                    }
-                }
+            } else {
+                _errorMessage.postValue("Falha no login com Google: ${task.exception?.message}")
+            }
         }
     }
 

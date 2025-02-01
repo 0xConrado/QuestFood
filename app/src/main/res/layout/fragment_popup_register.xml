@@ -13,7 +13,11 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:padding="8dp">
-
+        <ImageView
+            android:id="@+id/justspace1"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/close"/>
         <!-- Title -->
         <TextView
             android:id="@+id/register_title"

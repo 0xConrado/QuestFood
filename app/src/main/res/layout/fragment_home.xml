@@ -12,9 +12,9 @@
         android:layout_height="wrap_content">
 
         <!-- Saudações e perfil -->
-        <include
-            android:id="@+id/home_profile_section"
-            layout="@layout/layout_profile_section" />
+<!--        <include-->
+<!--            android:id="@+id/home_profile_section"-->
+<!--            layout="@layout/layout_profile_section" />-->
 
         <!--        &lt;!&ndash; Barra de busca &ndash;&gt;-->
         <!--        <EditText-->
@@ -119,7 +119,7 @@
             android:textColor="@color/gray"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"/>
 
         <!-- RecyclerView com botão de Adicionar Categoria -->
         <androidx.recyclerview.widget.RecyclerView

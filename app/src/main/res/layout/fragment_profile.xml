@@ -15,22 +15,21 @@
 
     <!-- Menu Options -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/menu_options_list"
+        android:id="@+id/profileMenuRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginTop="0dp"
-        tools:listitem="@layout/menu_item_food" />
+        tools:listitem="@layout/item_profile_menu" />
 
-    <!-- Botão de Logout -->
     <Button
-        android:id="@+id/buttonLogout"
+        android:id="@+id/buttonGainXp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sair"
+        android:text="+ 50 EXP"
         android:textSize="16sp"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/red"
+        android:backgroundTint="@color/green"
         android:textColor="@android:color/white" />
+
 
 </LinearLayout>

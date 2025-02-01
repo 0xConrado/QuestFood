@@ -10,15 +10,18 @@ class MainViewModel : ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    private val _user = MutableLiveData<FirebaseUser?>()
+    private val _user = MutableLiveData<FirebaseUser?>().apply {
+        value = auth.currentUser
+    }
     val user: LiveData<FirebaseUser?> get() = _user
 
     init {
-        _user.value = auth.currentUser
+        auth.addAuthStateListener { firebaseAuth ->
+            _user.value = firebaseAuth.currentUser
+        }
     }
 
     fun logout() {
         auth.signOut()
-        _user.value = null
     }
 }

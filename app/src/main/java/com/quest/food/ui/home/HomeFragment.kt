@@ -13,7 +13,6 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.quest.food.R
-import com.quest.food.User
 import com.quest.food.adapter.CategoriesAdapter
 import com.quest.food.databinding.DialogAddCategoryBinding
 import com.quest.food.databinding.FragmentHomeBinding
@@ -43,12 +42,7 @@ class HomeFragment : Fragment() {
         setupCategoriesAdapter()
 
         homeViewModel.user.observe(viewLifecycleOwner) { user ->
-            if (user != null) {
-                isAdmin = user.role == "admin"
-                updateUserUI(user)
-            } else {
-                showGuestUser()
-            }
+            isAdmin = user?.role == "admin"
             setupCategoriesAdapter()
         }
 
@@ -59,7 +53,7 @@ class HomeFragment : Fragment() {
 
     private fun setupCategoriesAdapter() {
         adapter = CategoriesAdapter(
-            categories = mutableListOf(), // ✅ Passa uma lista vazia inicial
+            categories = mutableListOf(),
             isAdmin = isAdmin,
             onCategoryClick = { selectedCategory -> openCategoryDetail(selectedCategory) },
             onAddCategoryClick = { if (isAdmin) showAddCategoryDialog() }
@@ -102,36 +96,7 @@ class HomeFragment : Fragment() {
         }
 
         dialogBinding.cancelButton.setOnClickListener { dialog.dismiss() }
-
         dialog.show()
-    }
-
-    private fun updateUserUI(user: User) {
-        binding.homeProfileSection.apply {
-            profileUserName.text = user.username
-            profileTitle.text = user.title
-            levelText.text = "Lvl ${user.level}"
-            levelProgressBar.progress = user.levelProgress
-
-            if (user.profileImagePath.isNotEmpty()) {
-                Glide.with(this@HomeFragment)
-                    .load(user.profileImagePath)
-                    .placeholder(R.drawable.user_default)
-                    .into(profileImage)
-            } else {
-                profileImage.setImageResource(R.drawable.user_default)
-            }
-        }
-    }
-
-    private fun showGuestUser() {
-        binding.homeProfileSection.apply {
-            profileUserName.text = "Visitante"
-            profileTitle.text = "Modo Anônimo"
-            levelText.text = "Lvl 0"
-            levelProgressBar.progress = 0
-            profileImage.setImageResource(R.drawable.user_default)
-        }
     }
 
     override fun onDestroyView() {

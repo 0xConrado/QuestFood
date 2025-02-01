@@ -1,42 +1,83 @@
 package com.quest.food
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
+import android.util.Log
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.quest.food.databinding.ActivityMainBinding
 import com.quest.food.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val mainViewModel: MainViewModel by viewModels()
+    private lateinit var auth: FirebaseAuth
+    private lateinit var navController: NavController
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Inflar layout com ViewBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Obtém a referência correta do NavHostFragment
+        auth = FirebaseAuth.getInstance()
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
+        // Configurar NavController corretamente
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
+        navController = navHostFragment.navController
+        binding.bottomNavigationView.setupWithNavController(navController)
 
-        // Configura a navegação com BottomNavigationView
-        binding.bottomNavigation.setupWithNavController(navController)
-
-        // Observar mudanças no usuário para logout
-        mainViewModel.user.observe(this) { user ->
-            if (user == null) navigateToLogin()
-        }
+        // Observar mudanças no usuário e atualizar o perfil
+        observeUserProfile()
     }
 
-    private fun navigateToLogin() {
-        startActivity(Intent(this, LoginActivity::class.java))
-        finish()
+    private fun observeUserProfile() {
+        viewModel.user.observe(this, Observer { user ->
+            user?.let { updateUserProfile(it) }
+        })
     }
+
+    private fun updateUserProfile(user: FirebaseUser) {
+        val database = FirebaseDatabase.getInstance().getReference("users")
+        val uid = user.uid
+
+        database.child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val name = snapshot.child("name").getValue(String::class.java) ?: "Usuário"
+
+                    Log.d("MainActivity", "Nome do usuário: $name")
+
+                    // **Acesse o fragmento ativo para atualizar o nome**
+                    val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.childFragmentManager?.fragments?.firstOrNull()
+
+                    currentFragment?.view?.findViewById<TextView>(R.id.profile_user_name)?.let { profileNameTextView ->
+                        profileNameTextView.text = name
+                    } ?: Log.e("MainActivity", "Erro: profile_user_name não encontrado no fragmento ativo")
+                } else {
+                    Log.e("MainActivity", "Erro: Snapshot do usuário não encontrado no Firebase")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("MainActivity", "Erro ao buscar usuário no Firebase: ${error.message}")
+            }
+        })
+    }
+
 }

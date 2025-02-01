@@ -9,9 +9,9 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/exploreFragment"
-        android:icon="@drawable/explorer"
-        android:title="@string/explore"
+        android:id="@+id/questFragment"
+        android:icon="@drawable/map"
+        android:title="@string/quest"
         app:showAsAction="ifRoom" />
 
     <item
