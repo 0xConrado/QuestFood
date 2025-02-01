@@ -8,15 +8,42 @@
     android:clipToPadding="false"
     android:clipChildren="false">
 
-    <!-- Imagem de fundo da categoria (preenchendo toda a área interna das bordas arredondadas) -->
+    <!-- Imagem de fundo da categoria -->
     <ImageView
         android:id="@+id/categoryImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:background="@drawable/banner_background"
         android:clipToOutline="true"
         android:outlineProvider="background" />
+
+    <!-- Botões de Edição e Exclusão -->
+    <LinearLayout
+        android:id="@+id/adminControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="8dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/buttonEditCategory"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/edit"
+            android:scaleType="centerInside"
+            android:contentDescription="Editar Categoria" />
+
+        <ImageView
+            android:id="@+id/buttonDeleteCategory"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/trash"
+            android:scaleType="centerInside"
+            android:contentDescription="Excluir Categoria"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
 
     <!-- Nome da categoria (título) -->
     <TextView
@@ -48,4 +75,5 @@
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="3" />
+
 </RelativeLayout>

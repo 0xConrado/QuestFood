@@ -1,18 +1,23 @@
 package com.quest.food.adapter
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.quest.food.databinding.AddItemCategoryBinding
 import com.quest.food.databinding.MenuItemCategoryBinding
 import com.quest.food.model.CategoryMenuItem
+import com.google.firebase.database.FirebaseDatabase
 
 class CategoriesAdapter(
     private var categories: MutableList<CategoryMenuItem>,
     private val isAdmin: Boolean,
     private val onCategoryClick: (CategoryMenuItem) -> Unit,
-    private val onAddCategoryClick: () -> Unit
+    private val onAddCategoryClick: () -> Unit,
+    private val onEditCategory: (CategoryMenuItem) -> Unit,
+    private val onDeleteCategory: (CategoryMenuItem) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val TYPE_CATEGORY = 1
@@ -65,6 +70,47 @@ class CategoriesAdapter(
             binding.categoryImage.clipToOutline = true
 
             binding.root.setOnClickListener { onCategoryClick(category) }
+
+            binding.adminControls.visibility = if (isAdmin) View.VISIBLE else View.GONE
+
+            binding.buttonEditCategory.setOnClickListener {
+                onEditCategory(category)
+            }
+
+            binding.buttonDeleteCategory.setOnClickListener {
+                showDeleteConfirmation(category)
+            }
+        }
+
+        private fun showDeleteConfirmation(category: CategoryMenuItem) {
+            AlertDialog.Builder(binding.root.context)
+                .setTitle("Excluir Categoria")
+                .setMessage("Tem certeza que deseja excluir ${category.title}?")
+                .setPositiveButton("SIM") { dialog, _ ->
+                    deleteCategoryFromDatabase(category)
+                    dialog.dismiss()
+                }
+                .setNegativeButton("CANCELAR") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+        }
+
+        private fun deleteCategoryFromDatabase(category: CategoryMenuItem) {
+            if (category.id.isNotEmpty()) {
+                val databaseReference = FirebaseDatabase.getInstance().getReference("categories")
+                databaseReference.child(category.id).removeValue()
+                    .addOnSuccessListener { onDeleteCategory(category) }
+                    .addOnFailureListener { e ->
+                        AlertDialog.Builder(binding.root.context)
+                            .setTitle("Erro")
+                            .setMessage("Falha ao excluir categoria: ${e.message}")
+                            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+                            .create()
+                            .show()
+                    }
+            }
         }
     }
 

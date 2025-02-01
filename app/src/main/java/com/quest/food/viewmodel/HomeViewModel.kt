@@ -1,5 +1,6 @@
 package com.quest.food.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -47,6 +48,7 @@ class HomeViewModel : ViewModel() {
             val categoriesList = mutableListOf<CategoryMenuItem>()
             for (child in snapshot.children) {
                 val category = child.getValue(CategoryMenuItem::class.java)
+                category?.id = child.key ?: "" // Atribui o ID da chave do Firebase
                 if (category != null) categoriesList.add(category)
             }
             _categories.value = categoriesList
@@ -57,10 +59,24 @@ class HomeViewModel : ViewModel() {
 
     fun addCategory(category: CategoryMenuItem) {
         val newCategoryRef = database.push()
+        category.id = newCategoryRef.key ?: ""  // Atribui o ID gerado pelo Firebase
+
         newCategoryRef.setValue(category).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 loadCategories()
             }
+        }
+    }
+
+    fun updateCategory(category: CategoryMenuItem) {
+        if (category.id.isNotEmpty()) {
+            database.child(category.id).setValue(category)
+        }
+    }
+
+    fun deleteCategory(category: CategoryMenuItem) {
+        if (category.id.isNotEmpty()) {
+            database.child(category.id).removeValue()
         }
     }
 }

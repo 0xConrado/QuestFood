@@ -56,10 +56,18 @@ class HomeFragment : Fragment() {
             categories = mutableListOf(),
             isAdmin = isAdmin,
             onCategoryClick = { selectedCategory -> openCategoryDetail(selectedCategory) },
-            onAddCategoryClick = { if (isAdmin) showAddCategoryDialog() }
+            onAddCategoryClick = { if (isAdmin) showAddCategoryDialog() },
+            onEditCategory = { category -> showEditCategoryDialog(category) },
+            onDeleteCategory = { category -> deleteCategory(category) } // ✅ Apenas exclusão direta
         )
+
         binding.categoriesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.categoriesRecyclerView.adapter = adapter
+    }
+
+    private fun deleteCategory(category: CategoryMenuItem) {
+        homeViewModel.deleteCategory(category)
+        Toast.makeText(requireContext(), "${category.title} excluída com sucesso!", Toast.LENGTH_SHORT).show()
     }
 
     private fun openCategoryDetail(category: CategoryMenuItem) {
@@ -97,6 +105,44 @@ class HomeFragment : Fragment() {
 
         dialogBinding.cancelButton.setOnClickListener { dialog.dismiss() }
         dialog.show()
+    }
+
+    private fun showEditCategoryDialog(category: CategoryMenuItem) {
+        val dialogBinding = DialogAddCategoryBinding.inflate(LayoutInflater.from(requireContext()))
+        dialogBinding.categoryTitleEditText.setText(category.title)
+        dialogBinding.categorySubtitleEditText.setText(category.subtitle)
+        dialogBinding.categoryImageUrlEditText.setText(category.imageUrl)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .setTitle("Editar Categoria")
+            .create()
+
+        dialogBinding.addCategoryButton.text = "Salvar"
+        dialogBinding.addCategoryButton.setOnClickListener {
+            val updatedCategory = CategoryMenuItem(
+                title = dialogBinding.categoryTitleEditText.text.toString(),
+                subtitle = dialogBinding.categorySubtitleEditText.text.toString(),
+                imageUrl = dialogBinding.categoryImageUrlEditText.text.toString()
+            )
+            homeViewModel.updateCategory(updatedCategory)
+            dialog.dismiss()
+        }
+
+        dialogBinding.cancelButton.setOnClickListener { dialog.dismiss() }
+        dialog.show()
+    }
+
+    private fun confirmDeleteCategory(category: CategoryMenuItem) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Excluir Categoria")
+            .setMessage("Tem certeza que deseja excluir ${category.title}?")
+            .setPositiveButton("Sim") { _, _ ->
+                homeViewModel.deleteCategory(category)
+                Toast.makeText(requireContext(), "${category.title} excluda", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     override fun onDestroyView() {
