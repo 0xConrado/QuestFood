@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/productImageDetail"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/placeholder_image" />
+
+    <TextView
+        android:id="@+id/productNameDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nome do Produto"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingTop="8dp" />
+
+    <TextView
+        android:id="@+id/productPriceDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="R$ 00,00"
+        android:textSize="18sp"
+        android:textColor="@android:color/holo_green_dark"
+        android:paddingTop="4dp" />
+
+    <TextView
+        android:id="@+id/productDescriptionDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="3"
+        android:ellipsize="end"
+        android:text="Descrição do Produto"
+        android:paddingTop="4dp" />
+
+    <Button
+        android:id="@+id/buttonViewMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver mais"
+        android:padding="8dp"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>

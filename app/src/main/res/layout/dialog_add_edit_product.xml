@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/banner_background"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/editTextProductName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nome do Produto"
+            android:padding="12dp"
+            style="@style/DefaultEditText" />
+
+        <EditText
+            android:id="@+id/editTextProductDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Descrição do Produto"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"
+            style="@style/DefaultEditText" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/editTextIngredient"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Adicionar Ingrediente"
+                android:padding="12dp"
+                style="@style/DefaultEditText" />
+
+            <ImageView
+                android:id="@+id/buttonAddIngredient"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@android:drawable/ic_input_add"
+                android:contentDescription="Adicionar Ingrediente"
+                android:padding="8dp"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ingredientsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/buttonViewMoreIngredients"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ver mais..."
+            android:textColor="@color/black"
+            android:visibility="gone"
+            android:layout_marginTop="4dp" />
+
+        <EditText
+            android:id="@+id/editTextProductPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Preço"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"
+            style="@style/DefaultEditText" />
+
+        <EditText
+            android:id="@+id/editTextProductDiscountPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Preço com Desconto (opcional)"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"
+            style="@style/DefaultEditText" />
+
+        <EditText
+            android:id="@+id/editTextProductImageUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="URL da Imagem"
+            android:inputType="textUri"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"
+            style="@style/DefaultEditText" />
+
+        <ImageView
+            android:id="@+id/imagePreview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/darker_gray" />
+
+        <CheckBox
+            android:id="@+id/checkboxPromotion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Promoção"
+            android:layout_marginTop="8dp" />
+
+        <CheckBox
+            android:id="@+id/checkboxBestSeller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mais Vendido"
+            android:layout_marginTop="4dp" />
+
+        <Button
+            android:id="@+id/buttonSaveProduct"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Salvar"
+            android:backgroundTint="@color/green"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
+</ScrollView>

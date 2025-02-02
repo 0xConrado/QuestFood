@@ -1,15 +1,18 @@
 package com.quest.food.adapter
 
 import android.app.AlertDialog
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.database.FirebaseDatabase
+import com.quest.food.R
 import com.quest.food.databinding.AddItemCategoryBinding
 import com.quest.food.databinding.MenuItemCategoryBinding
 import com.quest.food.model.CategoryMenuItem
-import com.google.firebase.database.FirebaseDatabase
 
 class CategoriesAdapter(
     private var categories: MutableList<CategoryMenuItem>,
@@ -69,7 +72,12 @@ class CategoriesAdapter(
 
             binding.categoryImage.clipToOutline = true
 
-            binding.root.setOnClickListener { onCategoryClick(category) }
+            binding.root.setOnClickListener {
+                val bundle = Bundle().apply {
+                    putString("categoryId", category.id)
+                }
+                it.findNavController().navigate(R.id.action_homeFragment_to_productListFragment, bundle)
+            }
 
             binding.adminControls.visibility = if (isAdmin) View.VISIBLE else View.GONE
 

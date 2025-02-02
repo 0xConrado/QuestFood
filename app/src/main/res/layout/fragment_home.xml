@@ -94,7 +94,7 @@
                 android:id="@+id/bannerImage"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:src="@drawable/media_image"
+                android:src="@drawable/placeholder_image"
                 android:scaleType="fitCenter" />
         </LinearLayout>
 

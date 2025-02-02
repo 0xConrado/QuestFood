@@ -10,7 +10,7 @@ data class Category(
     var title: String = "",
     var subtitle: String = "",
     var imageUrl: String = "",
-    var items: List<MenuItem> = emptyList()
+    var items: Map<String, MenuItem> = emptyMap()  // ✅ Alterado para Map
 ) : Parcelable {
-    constructor() : this("", "", "", "", emptyList()) // 🔥 Adicionamos um construtor sem argumentos
+    constructor() : this("", "", "", "", emptyMap())  // ✅ Construtor atualizado
 }
