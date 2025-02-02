@@ -66,9 +66,16 @@ class ProductViewModel : ViewModel() {
             if (product.id.isEmpty()) {
                 val newProductRef = categoryRef.push()
                 product.id = newProductRef.key ?: ""
+                product.categoryId = categoryId
                 newProductRef.setValue(product)
             } else {
                 categoryRef.child(product.id).setValue(product)
+                    .addOnSuccessListener {
+                        loadProductsForCategory(categoryId) // Atualiza a lista após edição
+                    }
+                    .addOnFailureListener { error ->
+                        println("Erro ao atualizar o produto: ${error.message}")
+                    }
             }
         }
     }

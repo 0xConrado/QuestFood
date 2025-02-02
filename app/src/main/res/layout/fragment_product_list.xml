@@ -65,6 +65,7 @@
             android:background="@drawable/input_bar_background"
             android:hint="Digite para buscar um item"
             android:drawableStart="@drawable/search"
+            android:textColor="@android:color/black"
             android:paddingStart="16dp"
             android:padding="12dp"
             android:textSize="16sp"

@@ -56,8 +56,9 @@
             android:id="@+id/ingredientsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="4dp"
+            android:backgroundTint="@color/black"
+            android:orientation="vertical" />
 
         <TextView
             android:id="@+id/buttonViewMoreIngredients"
@@ -111,12 +112,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Promoção"
+            android:textColor="@color/black"
             android:layout_marginTop="8dp" />
 
         <CheckBox
             android:id="@+id/checkboxBestSeller"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:text="Mais Vendido"
             android:layout_marginTop="4dp" />
 

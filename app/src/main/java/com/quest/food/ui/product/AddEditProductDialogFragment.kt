@@ -18,6 +18,7 @@ class AddEditProductDialogFragment : DialogFragment() {
 
     private val productViewModel: ProductViewModel by viewModels()
     private var categoryId: String? = null
+    private var product: ProductItem? = null
 
     private lateinit var editTextProductName: EditText
     private lateinit var editTextProductDescription: EditText
@@ -36,6 +37,11 @@ class AddEditProductDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         categoryId = arguments?.getString("categoryId")
+        product = arguments?.getParcelable("product")
+
+        if (product != null && categoryId == null) {
+            categoryId = product?.categoryId  // Garantir o categoryId ao editar
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -77,6 +83,17 @@ class AddEditProductDialogFragment : DialogFragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
+        product?.let {
+            editTextProductName.setText(it.name)
+            editTextProductDescription.setText(it.description)
+            editTextProductPrice.setText(it.price.toString())
+            editTextProductImageUrl.setText(it.imageUrl)
+            editTextProductDiscountPrice.setText(it.originalPrice?.toString() ?: "")
+            checkboxPromotion.isChecked = it.isPromotion
+            checkboxBestSeller.isChecked = it.isBestSeller
+            it.ingredients.forEach { ingredient -> addIngredientToList(ingredient) }
+        }
+
         builder.setView(view)
         return builder.create()
     }
@@ -103,8 +120,7 @@ class AddEditProductDialogFragment : DialogFragment() {
             (ingredientsContainer.getChildAt(it) as TextView).text.toString().removePrefix("- ")
         }
 
-        val product = ProductItem(
-            id = "",
+        val updatedProduct = product?.copy(
             name = name,
             description = description,
             imageUrl = imageUrl,
@@ -112,14 +128,30 @@ class AddEditProductDialogFragment : DialogFragment() {
             originalPrice = discountPrice,
             ingredients = ingredients,
             isPromotion = isPromotion,
-            isBestSeller = isBestSeller
+            isBestSeller = isBestSeller,
+            categoryId = categoryId ?: "",
+            id = product?.id ?: "" // ✅ Mantém o ID do produto durante a edição
+        ) ?: ProductItem(
+            id = "",  // Novo produto
+            name = name,
+            description = description,
+            imageUrl = imageUrl,
+            price = price,
+            originalPrice = discountPrice,
+            ingredients = ingredients,
+            isPromotion = isPromotion,
+            isBestSeller = isBestSeller,
+            categoryId = categoryId ?: ""
         )
 
-        categoryId?.let {
-            productViewModel.addOrUpdateProduct(it, product)
+        categoryId?.let { catId ->
+            productViewModel.addOrUpdateProduct(catId, updatedProduct)
+            Toast.makeText(requireContext(), "Produto salvo com sucesso!", Toast.LENGTH_SHORT).show()
         }
+
         dismiss()
     }
+
 
     companion object {
         fun newInstance(categoryId: String): AddEditProductDialogFragment {
@@ -135,6 +167,7 @@ class AddEditProductDialogFragment : DialogFragment() {
             val fragment = AddEditProductDialogFragment()
             val args = Bundle().apply {
                 putParcelable("product", product)
+                putString("categoryId", product.categoryId)
             }
             fragment.arguments = args
             return fragment

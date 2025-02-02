@@ -25,15 +25,16 @@ class ProductAdapter(
         private val productDescription: TextView? = itemView.findViewById(R.id.productDescription)
         private val productPrice: TextView? = itemView.findViewById(R.id.productPrice)
         private val productOriginalPrice: TextView? = itemView.findViewById(R.id.productOriginalPrice)
-        private val badgePromotion: ImageView? = itemView.findViewById(R.id.badgePromotion)
-        private val badgeBestSeller: ImageView? = itemView.findViewById(R.id.badgeBestSeller)
+        private val badgePromotion: TextView? = itemView.findViewById(R.id.badgePromotion)
+        private val badgeBestSeller: TextView? = itemView.findViewById(R.id.badgeBestSeller)
         private val buttonEditProduct: ImageView? = itemView.findViewById(R.id.buttonEditProduct)
         private val buttonDeleteProduct: ImageView? = itemView.findViewById(R.id.buttonDeleteProduct)
         private val adminControls: LinearLayout? = itemView.findViewById(R.id.adminControls)
+        private val viewMoreButton: TextView? = itemView.findViewById(R.id.viewMoreButton)
 
         fun bind(product: ProductItem) {
             productTitle?.text = product.name
-            productDescription?.text = product.description
+            productDescription?.text = product.description.take(50) + if (product.description.length > 50) "..." else ""
             productPrice?.text = "R$ %.2f".format(product.price).replace('.', ',')
 
             productImage?.let {
@@ -43,8 +44,15 @@ class ProductAdapter(
                     .into(it)
             }
 
-            badgePromotion?.visibility = if (product.isPromotion) View.VISIBLE else View.GONE
-            badgeBestSeller?.visibility = if (product.isBestSeller) View.VISIBLE else View.GONE
+            badgePromotion?.apply {
+                visibility = if (product.isPromotion) View.VISIBLE else View.GONE
+                text = "Promoção!"
+            }
+
+            badgeBestSeller?.apply {
+                visibility = if (product.isBestSeller) View.VISIBLE else View.GONE
+                text = "+ Vendido!"
+            }
 
             productOriginalPrice?.apply {
                 visibility = if (product.isPromotion) View.VISIBLE else View.GONE
@@ -58,6 +66,14 @@ class ProductAdapter(
                 buttonDeleteProduct?.setOnClickListener { onDeleteProduct(product) }
             } else {
                 adminControls?.visibility = View.GONE
+            }
+
+            viewMoreButton?.apply {
+                visibility = if (product.description.length > 50) View.VISIBLE else View.GONE
+                setOnClickListener {
+                    productDescription?.text = product.description
+                    visibility = View.GONE
+                }
             }
         }
     }

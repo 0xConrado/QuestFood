@@ -1,8 +1,7 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/product_card_background"
-    android:orientation="horizontal"
     android:padding="8dp">
 
     <ImageView
@@ -13,29 +12,37 @@
         android:scaleType="centerCrop" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:layout_toEndOf="@id/productImage"
+        android:layout_alignParentTop="true">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <ImageView
+            <TextView
                 android:id="@+id/badgePromotion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/badge_promotion"
+                android:background="@drawable/badge_promotion"
+                android:text="Promoção!"
+                android:textColor="@android:color/white"
+                android:padding="4dp"
                 android:visibility="gone" />
 
-            <ImageView
+            <TextView
                 android:id="@+id/badgeBestSeller"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/badge_best_seller"
+                android:background="@drawable/badge_best_seller"
+                android:text="+ Vendido!"
+                android:textColor="@android:color/white"
+                android:padding="4dp"
+                android:layout_marginStart="4dp"
                 android:visibility="gone" />
         </LinearLayout>
 
@@ -52,8 +59,10 @@
             android:id="@+id/productDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:text="Descrição do produto"
-            android:textColor="@color/gray"/>
+            android:textColor="@color/gray" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -74,33 +83,45 @@
                 android:layout_height="wrap_content"
                 android:text="R$ 29,99"
                 android:textColor="@color/black"
-                android:textStyle="bold" />
-            <!-- Botões de Editar e Excluir -->
-
-            <LinearLayout
-                android:id="@+id/adminControls"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <ImageView
-                    android:id="@+id/buttonEditProduct"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/edit"
-                    android:contentDescription="Editar Produto"
-                    android:padding="4dp" />
-
-                <ImageView
-                    android:id="@+id/buttonDeleteProduct"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/trash"
-                    android:contentDescription="Excluir Produto"
-                    android:padding="4dp"
-                    android:layout_marginStart="8dp" />
-            </LinearLayout>
+                android:textStyle="bold"
+                android:layout_marginStart="8dp" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/viewMoreButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ver mais"
+            android:textColor="@android:color/holo_blue_dark"
+            android:visibility="visible"
+            android:paddingTop="4dp" />
     </LinearLayout>
-</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/adminControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/buttonEditProduct"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/edit"
+            android:contentDescription="Editar Produto"
+            android:padding="4dp" />
+
+        <ImageView
+            android:id="@+id/buttonDeleteProduct"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/trash"
+            android:contentDescription="Excluir Produto"
+            android:padding="4dp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+</RelativeLayout>

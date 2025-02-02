@@ -13,6 +13,6 @@ data class ProductItem(
     var imageUrl: String = "",
     var isPromotion: Boolean = false,
     var isBestSeller: Boolean = false,
-    var ingredients: List<String> = emptyList() // Adicionado o campo ingredients
+    var ingredients: List<String> = emptyList(),
+    var categoryId: String = "" // Adicionado o campo categoryId
 ) : Parcelable
-
