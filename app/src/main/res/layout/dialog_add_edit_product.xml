@@ -59,7 +59,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:backgroundTint="@color/black"
             android:orientation="vertical" />
 
         <TextView
@@ -85,7 +84,7 @@
             android:id="@+id/editTextProductDiscountPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Preço com Desconto (opcional)"
+            android:hint="Preço sem desconto (opcional)"
             android:inputType="numberDecimal"
             android:padding="12dp"
             android:layout_marginTop="8dp"

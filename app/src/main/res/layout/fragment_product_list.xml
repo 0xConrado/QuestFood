@@ -64,6 +64,7 @@
             android:layout_margin="8dp"
             android:background="@drawable/input_bar_background"
             android:hint="Digite para buscar um item"
+            android:textColorHint="@color/gray"
             android:drawableStart="@drawable/search"
             android:textColor="@android:color/black"
             android:paddingStart="16dp"

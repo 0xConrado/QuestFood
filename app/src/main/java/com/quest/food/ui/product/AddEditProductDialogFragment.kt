@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
@@ -100,18 +101,57 @@ class AddEditProductDialogFragment : DialogFragment() {
     }
 
     private fun addIngredientToList(ingredient: String) {
+        val ingredientLayout = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(8, 4, 8, 4)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
         val ingredientView = TextView(requireContext()).apply {
             text = "- $ingredient"
             textSize = 16f
+            setTextColor(ContextCompat.getColor(context, android.R.color.black))  // Define o texto em preto
             setPadding(8, 4, 8, 4)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
-        ingredientsContainer.addView(ingredientView)
+
+        val deleteButton = ImageView(requireContext()).apply {
+            setImageResource(R.drawable.trash) // Substitua por seu ícone de deletar
+            setPadding(8, 4, 8, 4)
+            setOnClickListener {
+                ingredientsContainer.removeView(ingredientLayout)
+                updateProductDescription()
+            }
+        }
+
+        val separator = View(requireContext()).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                1 // Altura da linha de separação
+            ).apply {
+                setMargins(8, 4, 8, 4)
+            }
+            setBackgroundColor(resources.getColor(android.R.color.darker_gray)) // Cor da linha
+        }
+
+        ingredientLayout.addView(ingredientView)
+        ingredientLayout.addView(deleteButton)
+
+        ingredientsContainer.addView(ingredientLayout)
+        ingredientsContainer.addView(separator)
     }
 
     private fun updateProductDescription() {
-        val ingredients = (0 until ingredientsContainer.childCount).map {
-            (ingredientsContainer.getChildAt(it) as TextView).text.toString().removePrefix("- ")
-        }
+        val ingredients = (0 until ingredientsContainer.childCount)
+            .mapNotNull { index ->
+                val view = ingredientsContainer.getChildAt(index)
+                if (view is LinearLayout) {
+                    (view.getChildAt(0) as? TextView)?.text.toString().removePrefix("- ")
+                } else null
+            }
         val description = ingredients.joinToString(", ")
         editTextProductDescription.setText(description)
     }
@@ -125,9 +165,13 @@ class AddEditProductDialogFragment : DialogFragment() {
         val isPromotion = checkboxPromotion.isChecked
         val isBestSeller = checkboxBestSeller.isChecked
 
-        val ingredients = (0 until ingredientsContainer.childCount).map {
-            (ingredientsContainer.getChildAt(it) as TextView).text.toString().removePrefix("- ")
-        }
+        val ingredients = (0 until ingredientsContainer.childCount)
+            .mapNotNull { index ->
+                val view = ingredientsContainer.getChildAt(index)
+                if (view is LinearLayout) {
+                    (view.getChildAt(0) as? TextView)?.text.toString().removePrefix("- ")
+                } else null
+            }
 
         val updatedProduct = product?.copy(
             name = name,
