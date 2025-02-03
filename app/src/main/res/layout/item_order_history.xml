@@ -1,0 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@android:color/darker_gray"
+    android:layout_marginBottom="8dp"
+    android:elevation="2dp">
+
+<TextView
+android:id="@+id/textOrderNumber"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Pedido: 123ABC"
+android:textStyle="bold"
+android:textSize="16sp"
+android:textColor="@android:color/black" />
+
+<TextView
+android:id="@+id/textOrderStatus"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Status: Aguardando Aprovação"
+android:textSize="14sp"
+android:paddingTop="4dp"
+android:textColor="@android:color/black" />
+
+<TextView
+android:id="@+id/textOrderTotal"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Total: R$50,00"
+android:textSize="14sp"
+android:paddingTop="4dp"
+android:textColor="@android:color/black" />
+
+<LinearLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:paddingTop="8dp">
+
+<Button
+    android:id="@+id/buttonRate"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:text="Avaliar"
+    android:visibility="gone" />
+
+<Button
+    android:id="@+id/buttonDispute"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:text="Contestar"
+    android:visibility="gone" />
+</LinearLayout>
+    </LinearLayout>

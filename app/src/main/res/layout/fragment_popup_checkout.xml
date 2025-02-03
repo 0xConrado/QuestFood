@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forma de Pagamento"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:paddingBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/paymentGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioCash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dinheiro" />
+
+        <RadioButton
+            android:id="@+id/radioCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cartão de Crédito/Débito" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tipo de Entrega"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/deliveryGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioDelivery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delivery" />
+
+        <RadioButton
+            android:id="@+id/radioPickup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Retirada no Local" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/observationField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Observações (opcional)"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:background="@android:drawable/editbox_background"
+        android:padding="8dp"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/buttonConfirmOrder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Confirmar Pedido"
+        android:background="@color/green"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="16dp" />
+</LinearLayout>

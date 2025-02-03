@@ -1,4 +1,4 @@
-package com.quest.food
+package com.quest.food.model
 
 data class Address(
         val street: String = "",
@@ -11,8 +11,8 @@ data class Address(
         val addressType: String = "" // Ex.: "Casa" ou "Trabalho"
 )
 
-// User data class to map Firebase Realtime Database entries
 data class User(
+        val id: String = "",
         val username: String = "",
         val email: String = "",
         val phone: String = "",
@@ -20,6 +20,7 @@ data class User(
         val title: String = "Novato",
         val level: Int = 1,
         val levelProgress: Int = 0,
-        val profileImagePath: String = "", // Updated to use profileImagePath
-        val role: String = "user" // Default role: "user" or "admin"
+        val profileImagePath: String = "",
+        val role: String = "user",
+        val address: Address = Address()  // ✅ Adicionado o campo address
 )

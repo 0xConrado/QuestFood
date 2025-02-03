@@ -91,5 +91,16 @@
             app:nullable="false" />
     </fragment>
 
+    <dialog
+        android:id="@+id/popupCheckoutFragment"
+        android:name="com.quest.food.ui.popup.PopupCheckoutFragment"
+        tools:layout="@layout/fragment_popup_checkout" />
+
+    <fragment
+        android:id="@+id/orderHistoryFragment"
+        android:name="com.quest.food.ui.order.OrderHistoryFragment"
+        android:label="Histórico de Pedidos"
+        tools:layout="@layout/fragment_order_history" />
+
 
 </navigation>

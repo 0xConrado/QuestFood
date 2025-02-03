@@ -1,5 +1,7 @@
 package com.quest.food.ui.cart
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,19 +9,20 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.quest.food.R
 import com.quest.food.adapter.CartAdapter
 import com.quest.food.databinding.FragmentCartBinding
 import com.quest.food.model.CartItem
+import com.quest.food.ui.popup.PopupCheckoutFragment
 import com.quest.food.viewmodel.CartViewModel
+import com.quest.food.viewmodel.UserViewModel
 
 class CartFragment : Fragment() {
 
     private var _binding: FragmentCartBinding? = null
     private val binding get() = _binding!!
     private val cartViewModel: CartViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
     private lateinit var cartAdapter: CartAdapter
 
     override fun onCreateView(
@@ -47,20 +50,27 @@ class CartFragment : Fragment() {
         }
 
         binding.buttonCheckout.setOnClickListener {
-            Toast.makeText(requireContext(), "Finalizando Compra!", Toast.LENGTH_SHORT).show()
+            val cartItems = cartViewModel.cartItems.value
+            if (!cartItems.isNullOrEmpty()) {
+                userViewModel.loadUserData() // Ensure user data is loaded
+                val popupCheckout = PopupCheckoutFragment()
+                val bundle = Bundle().apply {
+                    putParcelableArrayList("cartItems", ArrayList(cartItems))
+                }
+                popupCheckout.arguments = bundle
+                popupCheckout.show(parentFragmentManager, "PopupCheckoutFragment")
+            } else {
+                Toast.makeText(requireContext(), "Seu carrinho está vazio!", Toast.LENGTH_SHORT).show()
+            }
         }
-    }
-
-    private fun openProductDetail(cartItem: CartItem) {
-        val bundle = Bundle().apply {
-            putString("productId", cartItem.productId)
-            putString("categoryId", cartItem.categoryId)
-        }
-        findNavController().navigate(R.id.productDetailFragment, bundle)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun openProductDetail(cartItem: CartItem) {
+        Toast.makeText(requireContext(), "Detalhes do produto: ${cartItem.productName}", Toast.LENGTH_SHORT).show()
     }
 }

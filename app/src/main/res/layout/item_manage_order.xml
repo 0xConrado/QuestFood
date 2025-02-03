@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@android:color/white"
+    android:layout_marginBottom="8dp"
+    android:elevation="2dp">
+
+    <TextView
+        android:id="@+id/textOrderId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pedido: 123ABC"
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/textOrderTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total: R$50,00"
+        android:textSize="14sp"
+        android:paddingTop="4dp" />
+
+    <RadioGroup
+        android:id="@+id/statusGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="8dp">
+
+        <RadioButton android:id="@+id/radioApproved" android:text="Aprovado" />
+        <RadioButton android:id="@+id/radioCancelled" android:text="Cancelado" />
+        <RadioButton android:id="@+id/radioInProduction" android:text="Em Produção" />
+        <RadioButton android:id="@+id/radioOutForDelivery" android:text="Saiu para Entregar" />
+        <RadioButton android:id="@+id/radioDelivered" android:text="Entregue" />
+        <RadioButton android:id="@+id/radioCompleted" android:text="Concluído" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/buttonDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Excluir Pedido"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="8dp" />
+</LinearLayout>

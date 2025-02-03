@@ -45,10 +45,8 @@ class ProfileFragment : Fragment() {
 
         setupProfileMenu()
 
-        // Carregar dados do usuário ao abrir o perfil
         loadUserData()
 
-        // Simular ganho de XP ao clicar no botão
         binding.buttonGainXp.setOnClickListener {
             val userId = UserManager.getCurrentUserId() ?: return@setOnClickListener
             UserManager.addExperience(userId, 50) { level, progress, title ->
@@ -78,14 +76,18 @@ class ProfileFragment : Fragment() {
         binding.profileMenuRecyclerView.adapter = adapter
     }
 
-    /**
-     * Lida com os cliques nos itens do menu do perfil.
-     */
     private fun handleMenuItemClick(title: String) {
         when (title) {
             "Meu Endereço" -> {
                 val addressPopup = PopupAddressFragment()
                 addressPopup.show(parentFragmentManager, "PopupAddressFragment")
+            }
+            "Histórico de Pedidos" -> {
+                val userId = UserManager.getCurrentUserId() ?: return
+                val bundle = Bundle().apply {
+                    putString("userId", userId)
+                }
+                findNavController().navigate(R.id.orderHistoryFragment, bundle)
             }
             "Logout" -> {
                 logoutUser()

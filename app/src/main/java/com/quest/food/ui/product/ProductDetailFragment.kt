@@ -1,6 +1,8 @@
 package com.quest.food.ui.product
 
+import android.content.Intent
 import android.graphics.Paint
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,7 @@ import com.quest.food.R
 import com.quest.food.model.CartItem
 import com.quest.food.viewmodel.CartViewModel
 import com.quest.food.viewmodel.ProductViewModel
+import java.util.*
 
 class ProductDetailFragment : Fragment() {
 

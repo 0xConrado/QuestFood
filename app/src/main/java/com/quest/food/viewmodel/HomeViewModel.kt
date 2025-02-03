@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.quest.food.User
+import com.quest.food.model.User
 import com.quest.food.model.CategoryMenuItem
 
 class HomeViewModel : ViewModel() {
