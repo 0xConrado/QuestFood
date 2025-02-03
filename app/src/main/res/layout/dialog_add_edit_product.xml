@@ -22,7 +22,9 @@
             android:id="@+id/editTextProductDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Descrição do Produto"
+            android:hint="Ingredientes do Produto"
+            android:inputType="none"
+            android:focusable="false"
             android:padding="12dp"
             android:layout_marginTop="8dp"
             style="@style/DefaultEditText" />

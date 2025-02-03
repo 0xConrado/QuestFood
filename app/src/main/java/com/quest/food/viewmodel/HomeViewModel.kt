@@ -70,9 +70,24 @@ class HomeViewModel : ViewModel() {
 
     fun updateCategory(category: CategoryMenuItem) {
         if (category.id.isNotEmpty()) {
-            database.child(category.id).setValue(category)
+            val updates = mapOf(
+                "title" to category.title,
+                "subtitle" to category.subtitle,
+                "imageUrl" to category.imageUrl
+            )
+
+            database.child(category.id).updateChildren(updates)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        loadCategories()  // Atualiza a lista após edição
+                    }
+                }
+                .addOnFailureListener {
+                    Log.e("HomeViewModel", "Erro ao atualizar categoria: ${it.message}")
+                }
         }
     }
+
 
     fun deleteCategory(category: CategoryMenuItem) {
         if (category.id.isNotEmpty()) {

@@ -30,6 +30,8 @@ class ProductDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().findViewById<View>(R.id.bottomNavigationView)?.visibility = View.GONE
+
         val productId = arguments?.getString("productId") ?: return
         val categoryId = arguments?.getString("categoryId") ?: return
 
@@ -39,6 +41,11 @@ class ProductDetailFragment : Fragment() {
         val productPrice: TextView = view.findViewById(R.id.productPriceDetail)
         val buttonAddToCart: Button = view.findViewById(R.id.addToCartButton)
         val ingredientsContainer: LinearLayout = view.findViewById(R.id.ingredientsContainer)
+        val cartIcon: ImageView = view.findViewById(R.id.cartIcon)
+        val cartBadge: TextView = view.findViewById(R.id.cartBadge)
+
+        // Inicializar o contador do carrinho com 0
+        cartBadge.text = "0"
 
         // Aplicar o efeito de texto riscado ao preço antigo
         productOldPrice.paintFlags = productOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
@@ -78,6 +85,9 @@ class ProductDetailFragment : Fragment() {
 
                 buttonAddToCart.setOnClickListener {
                     // Lógica para adicionar o item ao pedido
+                    val currentCount = cartBadge.text.toString().toInt()
+                    cartBadge.text = (currentCount + 1).toString()
+                    cartBadge.visibility = View.VISIBLE
                 }
             }
         }

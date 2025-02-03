@@ -58,10 +58,15 @@ class AddEditProductDialogFragment : DialogFragment() {
         editTextIngredient = view.findViewById(R.id.editTextIngredient)
         buttonAddIngredient = view.findViewById(R.id.buttonAddIngredient)
 
+        // Tornar a descrição não editável
+        editTextProductDescription.isFocusable = false
+        editTextProductDescription.isClickable = false
+
         buttonAddIngredient.setOnClickListener {
             val ingredient = editTextIngredient.text.toString().trim()
             if (ingredient.isNotEmpty()) {
                 addIngredientToList(ingredient)
+                updateProductDescription()
                 editTextIngredient.text.clear()
             }
         }
@@ -81,13 +86,13 @@ class AddEditProductDialogFragment : DialogFragment() {
 
         product?.let {
             editTextProductName.setText(it.name)
-            editTextProductDescription.setText(it.description)
             editTextProductPrice.setText(it.price.toString())
             editTextProductImageUrl.setText(it.imageUrl)
             editTextProductDiscountPrice.setText(it.originalPrice?.toString() ?: "")
             checkboxPromotion.isChecked = it.isPromotion
             checkboxBestSeller.isChecked = it.isBestSeller
             it.ingredients.forEach { ingredient -> addIngredientToList(ingredient) }
+            updateProductDescription() // Atualiza a descrição com os ingredientes existentes
         }
 
         builder.setView(view)
@@ -101,6 +106,14 @@ class AddEditProductDialogFragment : DialogFragment() {
             setPadding(8, 4, 8, 4)
         }
         ingredientsContainer.addView(ingredientView)
+    }
+
+    private fun updateProductDescription() {
+        val ingredients = (0 until ingredientsContainer.childCount).map {
+            (ingredientsContainer.getChildAt(it) as TextView).text.toString().removePrefix("- ")
+        }
+        val description = ingredients.joinToString(", ")
+        editTextProductDescription.setText(description)
     }
 
     private fun saveProduct() {

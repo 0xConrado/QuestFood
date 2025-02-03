@@ -1,17 +1,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
     android:background="@android:color/white">
+
+    <!-- Esconde o Bottom Navigation -->
+    <View
+        android:id="@+id/bottomNavigationSpacer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
     <!-- Header com o nome e ícone do carrinho -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:orientation="horizontal"
+        android:background="@color/red"
         android:gravity="center_vertical"
-        android:paddingBottom="8dp">
+        android:padding="8dp">
 
         <ImageView
             android:id="@+id/backButton"
@@ -19,7 +27,8 @@
             android:layout_height="24dp"
             android:src="@drawable/nav_arrow_left"
             android:contentDescription="Voltar"
-            android:padding="4dp" />
+            android:padding="4dp"
+            app:tint="@color/white" />
 
         <TextView
             android:layout_width="0dp"
@@ -29,25 +38,47 @@
             android:textStyle="bold"
             android:textColor="@android:color/white"
             android:gravity="center"
-            android:background="@android:color/holo_red_dark"
             android:padding="8dp" />
 
-        <ImageView
-            android:id="@+id/cartIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:tint="@color/black"
-            android:src="@drawable/cart"
-            android:contentDescription="Carrinho"
-            android:padding="4dp" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/cartIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/cart"
+                android:contentDescription="Carrinho"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/cartBadge"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignTop="@id/cartIcon"
+                android:layout_alignEnd="@id/cartIcon"
+                android:background="@android:color/white"
+                android:text="0"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:visibility="gone"
+                android:padding="2dp"
+                android:layout_marginTop="-4dp"
+                android:layout_marginEnd="-4dp"
+                android:backgroundTint="@android:color/white"
+                android:backgroundTintMode="src_in" />
+        </RelativeLayout>
     </LinearLayout>
 
     <!-- Imagem do Produto -->
     <ImageView
         android:id="@+id/productImageDetail"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         android:src="@drawable/placeholder_image" />
 
     <!-- Nome e Preço do Produto -->
@@ -58,7 +89,8 @@
         android:text="Nome do Produto"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:paddingTop="8dp" />
+        android:paddingLeft="8dp"
+        android:textColor="@android:color/darker_gray" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -72,7 +104,8 @@
             android:layout_height="wrap_content"
             android:text="R$ 72,00"
             android:textColor="@android:color/holo_red_dark"
-            android:paddingEnd="8dp" />
+            android:textSize="18sp"
+            android:padding="8dp" />
 
         <TextView
             android:id="@+id/productPriceDetail"
@@ -80,7 +113,9 @@
             android:layout_height="wrap_content"
             android:text="R$ 64,99"
             android:textColor="@android:color/holo_green_dark"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:padding="8dp" />
     </LinearLayout>
 
     <!-- Ingredientes -->
@@ -88,9 +123,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ingredientes"
-        android:textStyle="bold"
-        android:background="@android:color/darker_gray"
-        android:padding="8dp" />
+        android:background="@color/red"
+        android:padding="8dp"
+        android:textSize="18dp"
+        android:textColor="@android:color/white" />
 
     <LinearLayout
         android:id="@+id/ingredientsContainer"
@@ -110,15 +146,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Ingrediente 1" />
+                android:text="Ingrediente 1"/>
 
             <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true" />
         </LinearLayout>
-
-        <!-- Adicione mais ingredientes conforme necessário -->
     </LinearLayout>
 
     <!-- Botão de Adicionar ao Pedido -->
@@ -127,9 +161,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="ADICIONAR AO PEDIDO"
-        android:background="@android:color/holo_green_dark"
+        android:background="@color/red"
         android:textColor="@android:color/white"
-        android:drawableLeft="@android:drawable/ic_menu_add"
+        android:drawableTint="@color/white"
+        android:drawableLeft="@drawable/plus_circle"
+        android:drawableRight="@drawable/cart"
         android:padding="12dp"
         android:layout_marginTop="16dp" />
 

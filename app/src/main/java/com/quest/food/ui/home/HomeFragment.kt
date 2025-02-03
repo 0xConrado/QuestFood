@@ -121,6 +121,7 @@ class HomeFragment : Fragment() {
         dialogBinding.addCategoryButton.text = "Salvar"
         dialogBinding.addCategoryButton.setOnClickListener {
             val updatedCategory = CategoryMenuItem(
+                id = category.id,  // ✅ Mantém o ID da categoria para garantir a atualização correta
                 title = dialogBinding.categoryTitleEditText.text.toString(),
                 subtitle = dialogBinding.categorySubtitleEditText.text.toString(),
                 imageUrl = dialogBinding.categoryImageUrlEditText.text.toString()
