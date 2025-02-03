@@ -1,9 +1,48 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@android:color/white">
 
+    <!-- Header com o nome e ícone do carrinho -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="8dp">
+
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/nav_arrow_left"
+            android:contentDescription="Voltar"
+            android:padding="4dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="MONTANDO ITEM"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:background="@android:color/holo_red_dark"
+            android:padding="8dp" />
+
+        <ImageView
+            android:id="@+id/cartIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:tint="@color/black"
+            android:src="@drawable/cart"
+            android:contentDescription="Carrinho"
+            android:padding="4dp" />
+    </LinearLayout>
+
+    <!-- Imagem do Produto -->
     <ImageView
         android:id="@+id/productImageDetail"
         android:layout_width="match_parent"
@@ -11,6 +50,7 @@
         android:scaleType="centerCrop"
         android:src="@drawable/placeholder_image" />
 
+    <!-- Nome e Preço do Produto -->
     <TextView
         android:id="@+id/productNameDetail"
         android:layout_width="wrap_content"
@@ -20,30 +60,77 @@
         android:textStyle="bold"
         android:paddingTop="8dp" />
 
-    <TextView
-        android:id="@+id/productPriceDetail"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="R$ 00,00"
-        android:textSize="18sp"
-        android:textColor="@android:color/holo_green_dark"
-        android:paddingTop="4dp" />
+        android:orientation="horizontal"
+        android:paddingTop="4dp">
 
+        <TextView
+            android:id="@+id/productOldPriceDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="R$ 72,00"
+            android:textColor="@android:color/holo_red_dark"
+            android:paddingEnd="8dp" />
+
+        <TextView
+            android:id="@+id/productPriceDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="R$ 64,99"
+            android:textColor="@android:color/holo_green_dark"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <!-- Ingredientes -->
     <TextView
-        android:id="@+id/productDescriptionDetail"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="3"
-        android:ellipsize="end"
-        android:text="Descrição do Produto"
-        android:paddingTop="4dp" />
+        android:text="Ingredientes"
+        android:textStyle="bold"
+        android:background="@android:color/darker_gray"
+        android:padding="8dp" />
 
+    <LinearLayout
+        android:id="@+id/ingredientsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Ingrediente 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Ingrediente 1" />
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true" />
+        </LinearLayout>
+
+        <!-- Adicione mais ingredientes conforme necessário -->
+    </LinearLayout>
+
+    <!-- Botão de Adicionar ao Pedido -->
     <Button
-        android:id="@+id/buttonViewMore"
-        android:layout_width="wrap_content"
+        android:id="@+id/addToCartButton"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ver mais"
-        android:padding="8dp"
-        android:layout_gravity="center_horizontal" />
+        android:text="ADICIONAR AO PEDIDO"
+        android:background="@android:color/holo_green_dark"
+        android:textColor="@android:color/white"
+        android:drawableLeft="@android:drawable/ic_menu_add"
+        android:padding="12dp"
+        android:layout_marginTop="16dp" />
 
 </LinearLayout>

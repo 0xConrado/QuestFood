@@ -79,6 +79,17 @@
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.quest.food.ui.product.ProductDetailFragment"
-        tools:layout="@layout/fragment_product_detail" />
+        android:label="Detalhes do Produto"
+        tools:layout="@layout/fragment_product_detail">
+        <argument
+            android:name="productId"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="categoryId"
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
+
 
 </navigation>

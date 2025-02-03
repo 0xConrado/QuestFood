@@ -12,10 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.quest.food.R
 import com.quest.food.adapter.ProductAdapter
-import com.quest.food.adapter.CategoriesAdapter
 import com.quest.food.databinding.FragmentProductListBinding
 import com.quest.food.model.ProductItem
 import com.quest.food.viewmodel.ProductViewModel
+import androidx.navigation.fragment.findNavController
+import com.quest.food.ui.product.ProductFragmentDirections
 
 class ProductFragment : Fragment() {
 
@@ -23,7 +24,7 @@ class ProductFragment : Fragment() {
     private val binding get() = _binding!!
     private val productViewModel: ProductViewModel by viewModels()
     private lateinit var adapter: ProductAdapter
-    private var categoryId: String = ""  // ID da categoria atual
+    private var categoryId: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,7 +75,8 @@ class ProductFragment : Fragment() {
             products = mutableListOf(),
             isAdmin = productViewModel.isAdmin.value ?: false,
             onEditProduct = { product -> showEditProductDialog(product) },
-            onDeleteProduct = { product -> confirmDeleteProduct(product) }
+            onDeleteProduct = { product -> confirmDeleteProduct(product) },
+            onViewProductDetails = { product -> showProductDetailFragment(product) }
         )
 
         binding.productRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -91,17 +93,25 @@ class ProductFragment : Fragment() {
         dialog.show(parentFragmentManager, "EditProductDialog")
     }
 
+    private fun showProductDetailFragment(product: ProductItem) {
+        val action = ProductFragmentDirections.actionProductListFragmentToProductDetailFragment(
+            productId = product.id,
+            categoryId = categoryId
+        )
+        findNavController().navigate(action)
+    }
+
+
     private fun confirmDeleteProduct(product: ProductItem) {
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setTitle("Excluir Produto")
             .setMessage("Tem certeza que deseja excluir ${product.name}?")
             .setPositiveButton("SIM") { _, _ ->
-                productViewModel.deleteProduct(categoryId, product)  // 🚀 Verifique se categoryId está definido corretamente
+                productViewModel.deleteProduct(categoryId, product)
             }
             .setNegativeButton("CANCELAR", null)
             .show()
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

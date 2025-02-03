@@ -16,7 +16,8 @@ class ProductAdapter(
     private var products: MutableList<ProductItem>,
     private var isAdmin: Boolean,
     private val onEditProduct: (ProductItem) -> Unit,
-    private val onDeleteProduct: (ProductItem) -> Unit
+    private val onDeleteProduct: (ProductItem) -> Unit,
+    private val onViewProductDetails: (ProductItem) -> Unit // ✅ Novo parâmetro adicionado
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     inner class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -68,12 +69,11 @@ class ProductAdapter(
                 adminControls?.visibility = View.GONE
             }
 
+            // ✅ Atualizado para chamar o novo listener onViewProductDetails
+            itemView.setOnClickListener { onViewProductDetails(product) }
             viewMoreButton?.apply {
                 visibility = if (product.description.length > 50) View.VISIBLE else View.GONE
-                setOnClickListener {
-                    productDescription?.text = product.description
-                    visibility = View.GONE
-                }
+                setOnClickListener { onViewProductDetails(product) }
             }
         }
     }

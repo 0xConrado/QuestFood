@@ -20,6 +20,9 @@ class ProductViewModel : ViewModel() {
     private val _isAdmin = MutableLiveData<Boolean>()
     val isAdmin: LiveData<Boolean> get() = _isAdmin
 
+    private val _selectedProduct = MutableLiveData<ProductItem?>()
+    val selectedProduct: LiveData<ProductItem?> get() = _selectedProduct
+
     private var originalProductList: List<ProductItem> = emptyList() // 🗂️ Para manter a lista original
 
     init {
@@ -83,6 +86,22 @@ class ProductViewModel : ViewModel() {
     fun deleteProduct(categoryId: String, product: ProductItem) {
         if (categoryId.isNotEmpty() && product.id.isNotEmpty()) {
             database.child(categoryId).child("products").child(product.id).removeValue()
+        }
+    }
+
+    fun getProductById(categoryId: String, productId: String) {
+        if (categoryId.isNotEmpty() && productId.isNotEmpty()) {
+            database.child(categoryId).child("products").child(productId)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val product = snapshot.getValue(ProductItem::class.java)
+                        _selectedProduct.value = product
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        _selectedProduct.value = null
+                    }
+                })
         }
     }
 

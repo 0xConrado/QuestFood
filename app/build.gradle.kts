@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.googleServices)
     id("org.jetbrains.kotlin.kapt") // Habilita o plugin Kotlin KAPT
     id("kotlin-parcelize") // Ativa o suporte ao @Parcelize
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {

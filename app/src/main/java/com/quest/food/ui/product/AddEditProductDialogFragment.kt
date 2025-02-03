@@ -38,10 +38,6 @@ class AddEditProductDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         categoryId = arguments?.getString("categoryId")
         product = arguments?.getParcelable("product")
-
-        if (product != null && categoryId == null) {
-            categoryId = product?.categoryId  // Garantir o categoryId ao editar
-        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -128,9 +124,7 @@ class AddEditProductDialogFragment : DialogFragment() {
             originalPrice = discountPrice,
             ingredients = ingredients,
             isPromotion = isPromotion,
-            isBestSeller = isBestSeller,
-            categoryId = categoryId ?: "",
-            id = product?.id ?: "" // ✅ Mantém o ID do produto durante a edição
+            isBestSeller = isBestSeller
         ) ?: ProductItem(
             id = "",  // Novo produto
             name = name,
@@ -140,18 +134,16 @@ class AddEditProductDialogFragment : DialogFragment() {
             originalPrice = discountPrice,
             ingredients = ingredients,
             isPromotion = isPromotion,
-            isBestSeller = isBestSeller,
-            categoryId = categoryId ?: ""
+            isBestSeller = isBestSeller
         )
 
-        categoryId?.let { catId ->
-            productViewModel.addOrUpdateProduct(catId, updatedProduct)
+        categoryId?.let {
+            productViewModel.addOrUpdateProduct(it, updatedProduct)
             Toast.makeText(requireContext(), "Produto salvo com sucesso!", Toast.LENGTH_SHORT).show()
         }
 
         dismiss()
     }
-
 
     companion object {
         fun newInstance(categoryId: String): AddEditProductDialogFragment {

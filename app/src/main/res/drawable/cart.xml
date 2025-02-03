@@ -7,28 +7,28 @@
       android:pathData="M19.5,22C20.328,22 21,21.328 21,20.5C21,19.672 20.328,19 19.5,19C18.672,19 18,19.672 18,20.5C18,21.328 18.672,22 19.5,22Z"
       android:strokeLineJoin="round"
       android:strokeWidth="1.5"
-      android:fillColor="@color/black"
-      android:strokeColor="@color/black"
+      android:fillColor="@color/gray"
+      android:strokeColor="@color/gray"
       android:strokeLineCap="round"/>
   <path
       android:pathData="M9.5,22C10.328,22 11,21.328 11,20.5C11,19.672 10.328,19 9.5,19C8.672,19 8,19.672 8,20.5C8,21.328 8.672,22 9.5,22Z"
       android:strokeLineJoin="round"
       android:strokeWidth="1.5"
-      android:fillColor="@color/black"
-      android:strokeColor="@color/black"
+      android:fillColor="@color/gray"
+      android:strokeColor="@color/gray"
       android:strokeLineCap="round"/>
   <path
       android:pathData="M5,4H22L20,15H7L5,4ZM5,4C4.833,3.333 4,2 2,2"
       android:strokeLineJoin="round"
       android:strokeWidth="1.5"
       android:fillColor="#00000000"
-      android:strokeColor="@color/black"
+      android:strokeColor="@color/gray"
       android:strokeLineCap="round"/>
   <path
       android:pathData="M20,15H7H5.231C3.446,15 2.5,15.781 2.5,17C2.5,18.219 3.446,19 5.231,19H19.5"
       android:strokeLineJoin="round"
       android:strokeWidth="1.5"
       android:fillColor="#00000000"
-      android:strokeColor="@color/black"
+      android:strokeColor="@color/gray"
       android:strokeLineCap="round"/>
 </vector>
