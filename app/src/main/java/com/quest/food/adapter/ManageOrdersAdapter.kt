@@ -1,5 +1,6 @@
 package com.quest.food.adapter
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ class ManageOrdersAdapter(
         holder.orderId.text = "Pedido: ${order.id.takeLast(6)}"
         holder.orderTotal.text = "Total: R$%.2f".format(order.total)
 
+        // Define o status atual
         when (order.status) {
             "Aprovado" -> holder.statusGroup.check(R.id.radioApproved)
             "Cancelado" -> holder.statusGroup.check(R.id.radioCancelled)
@@ -42,6 +44,7 @@ class ManageOrdersAdapter(
             "Concluído" -> holder.statusGroup.check(R.id.radioCompleted)
         }
 
+        // Atualização do status apenas quando houver uma mudança
         holder.statusGroup.setOnCheckedChangeListener { _, checkedId ->
             val newStatus = when (checkedId) {
                 R.id.radioApproved -> "Aprovado"
@@ -52,11 +55,21 @@ class ManageOrdersAdapter(
                 R.id.radioCompleted -> "Concluído"
                 else -> order.status
             }
-            onStatusChange(order, newStatus)
+            if (newStatus != order.status) {
+                onStatusChange(order, newStatus)
+            }
         }
 
+        // Confirmação antes de excluir o pedido
         holder.deleteButton.setOnClickListener {
-            onDeleteOrder(order)
+            AlertDialog.Builder(holder.itemView.context)
+                .setTitle("Confirmar Exclusão")
+                .setMessage("Tem certeza que deseja excluir o pedido ${order.id.takeLast(6)}?")
+                .setPositiveButton("Sim") { _, _ ->
+                    onDeleteOrder(order)
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
         }
     }
 

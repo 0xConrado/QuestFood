@@ -12,6 +12,7 @@ import com.quest.food.R
 import com.quest.food.adapter.OrderHistoryAdapter
 import com.quest.food.databinding.FragmentOrderHistoryBinding
 import com.quest.food.viewmodel.OrderViewModel
+import com.quest.food.model.Order
 
 class OrderHistoryFragment : Fragment() {
 
@@ -31,7 +32,6 @@ class OrderHistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Configura o RecyclerView com o Adapter
         adapter = OrderHistoryAdapter(mutableListOf(),
             onRateClick = { showRatingDialog(it.id) },
             onDisputeClick = { showDisputeDialog(it.id) }
@@ -40,11 +40,23 @@ class OrderHistoryFragment : Fragment() {
         binding.recyclerViewOrderHistory.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewOrderHistory.adapter = adapter
 
-        // Observa os pedidos do usuário
-        observeUserOrders()
+        val orderId = arguments?.getString("orderId")
 
-        // Carrega os pedidos
+        if (orderId.isNullOrEmpty()) {
+            refreshUserOrders()
+        } else {
+            loadSpecificOrder(orderId)
+        }
+    }
+
+    private fun refreshUserOrders() {
         orderViewModel.loadUserOrders()
+        observeUserOrders()
+    }
+
+    private fun loadSpecificOrder(orderId: String) {
+        orderViewModel.loadSpecificOrder(orderId)
+        observeUserOrders()
     }
 
     private fun observeUserOrders() {
@@ -53,19 +65,16 @@ class OrderHistoryFragment : Fragment() {
             if (orders.isEmpty()) {
                 Log.d("OrderHistoryFragment", "Nenhum pedido encontrado.")
             }
-            adapter.updateOrders(orders)  // Atualiza o RecyclerView com os pedidos
+            adapter.updateOrders(orders)
         }
     }
 
-
     private fun showRatingDialog(orderId: String) {
         // Lógica para mostrar o diálogo de avaliação
-        // Exemplo de como você pode exibir um RatingDialog
     }
 
     private fun showDisputeDialog(orderId: String) {
         // Lógica para mostrar o diálogo de contestação
-        // Exemplo de como você pode exibir um DisputeDialog
     }
 
     override fun onDestroyView() {

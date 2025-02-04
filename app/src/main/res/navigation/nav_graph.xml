@@ -102,5 +102,24 @@
         android:label="Histórico de Pedidos"
         tools:layout="@layout/fragment_order_history" />
 
+    <fragment
+        android:id="@+id/manageOrdersFragment"
+        android:name="com.quest.food.ui.order.ManageOrdersFragment"
+        android:label="Gerenciar Pedidos"
+        tools:layout="@layout/fragment_manage_orders" />
+
+    <fragment
+        android:id="@+id/orderHistoryFragment"
+        android:name="com.quest.food.ui.order.OrderHistoryFragment"
+        android:label="Order History">
+        <argument
+            android:name="orderId"
+            app:argType="string"
+            android:defaultValue="" />
+        <deepLink
+            app:uri="https://questfood.app/pedido/{orderId}" />
+    </fragment>
+
+
 
 </navigation>

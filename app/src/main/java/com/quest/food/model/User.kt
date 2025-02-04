@@ -1,5 +1,8 @@
 package com.quest.food.model
 
+import java.io.Serializable
+
+// Tornando Address serializável
 data class Address(
         val street: String = "",
         val number: String = "",
@@ -9,7 +12,9 @@ data class Address(
         val state: String = "",
         val postalCode: String = "",
         val addressType: String = "" // Ex.: "Casa" ou "Trabalho"
-)
+) : Serializable
+
+// Tornando User serializável
 
 data class User(
         val id: String = "",
@@ -23,4 +28,4 @@ data class User(
         val profileImagePath: String = "",
         val role: String = "user",
         val address: Address = Address()  // ✅ Adicionado o campo address
-)
+) : Serializable

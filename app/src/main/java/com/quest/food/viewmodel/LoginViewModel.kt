@@ -41,6 +41,37 @@ class LoginViewModel : ViewModel() {
             }
     }
 
+    fun loginWithUsername(username: String, password: String) {
+        if (username.isEmpty() || password.isEmpty()) {
+            _errorMessage.value = "Por favor, preencha todos os campos."
+            return
+        }
+
+        _loading.value = true
+        database.orderByChild("username").equalTo(username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (userSnapshot in snapshot.children) {
+                            val email = userSnapshot.child("email").getValue(String::class.java)
+                            if (email != null) {
+                                loginWithEmail(email, password)
+                                return
+                            }
+                        }
+                    } else {
+                        _loading.value = false
+                        _errorMessage.value = "Usuário não encontrado."
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    _loading.value = false
+                    _errorMessage.value = "Erro ao buscar usuário: ${error.message}"
+                }
+            })
+    }
+
     fun loginAnonymously() {
         _loading.value = true
         auth.signInAnonymously()
@@ -62,7 +93,6 @@ class LoginViewModel : ViewModel() {
                 firebaseUser?.let { user ->
                     val userRef = database.child(user.uid)
 
-                    // Verifica se o usuário já existe no banco de dados
                     userRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (!snapshot.exists()) {

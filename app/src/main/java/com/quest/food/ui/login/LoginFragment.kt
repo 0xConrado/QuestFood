@@ -1,21 +1,23 @@
 package com.quest.food.ui.login
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.FirebaseDatabase
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.quest.food.R
 import com.quest.food.databinding.FragmentLoginBinding
 import com.quest.food.ui.popup.PopupRegisterFragment
@@ -39,72 +41,117 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().findViewById<View>(R.id.bottomNavigationView)?.visibility = View.GONE
-
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
 
-        loginViewModel.user.observe(viewLifecycleOwner) { user ->
-            if (user != null) navigateToHome()
-        }
-
-        loginViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            message?.let { showToast(it) }
-        }
-
-        loginViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            binding.loginProgressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        }
-
         binding.buttonLogin.setOnClickListener {
-            val email = binding.editTextEmail.text.toString().trim()
+            val input = binding.editTextEmail.text.toString().trim()
             val password = binding.editTextPassword.text.toString().trim()
-            loginViewModel.loginWithEmail(email, password)
-        }
 
-        binding.buttonLoginGoogle.setOnClickListener {
-            signInWithGoogle()
-        }
+            if (input.isEmpty() || password.isEmpty()) {
+                Toast.makeText(requireContext(), "Preencha todos os campos.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-        binding.buttonLoginAnonymous.setOnClickListener {
-            loginViewModel.loginAnonymously()
+            if (Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
+                loginViewModel.loginWithEmail(input, password)
+            } else {
+                loginViewModel.loginWithUsername(input, password)
+            }
         }
 
         binding.textViewRegister.setOnClickListener {
             val registerPopup = PopupRegisterFragment()
             registerPopup.show(parentFragmentManager, "RegisterPopup")
         }
-    }
 
-    private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val data = result.data
-        if (result.resultCode == Activity.RESULT_OK && data != null) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val account = task.getResult(ApiException::class.java)
-                account?.idToken?.let { loginViewModel.loginWithGoogle(it) }
-            } catch (e: ApiException) {
-                showToast("Falha no login: ${e.message}")
+        binding.buttonLoginGoogle.setOnClickListener {
+            googleSignInClient.signOut().addOnCompleteListener {
+                val signInIntent = googleSignInClient.signInIntent
+                startActivityForResult(signInIntent, 9001)
+            }
+        }
+
+        loginViewModel.user.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                verificarRoleDoUsuario(user.uid)
+            }
+        }
+
+        loginViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun signInWithGoogle() {
-        googleSignInClient.signOut().addOnCompleteListener {
-            val signInIntent = googleSignInClient.signInIntent
-            googleSignInLauncher.launch(signInIntent)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 9001) {
+            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
+            if (task.isSuccessful) {
+                val account = task.result
+                firebaseAuthWithGoogle(account.idToken!!)
+            } else {
+                Toast.makeText(requireContext(), "Falha no login com o Google", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
-    private fun navigateToHome() {
-        requireActivity().findViewById<View>(R.id.bottomNavigationView)?.visibility = View.VISIBLE
-        findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        FirebaseAuth.getInstance().signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = FirebaseAuth.getInstance().currentUser
+                    val database = FirebaseDatabase.getInstance().getReference("users").child(user!!.uid)
+
+                    database.get().addOnSuccessListener { snapshot ->
+                        if (!snapshot.exists()) {
+                            val newUser = mapOf(
+                                "username" to (user.displayName ?: "Usuário"),
+                                "email" to (user.email ?: ""),
+                                "phone" to (user.phoneNumber ?: ""),
+                                "birthday" to "",
+                                "title" to "Novato",
+                                "level" to 1,
+                                "levelProgress" to 0,
+                                "profileImagePath" to (user.photoUrl?.toString() ?: ""),
+                                "role" to "user"
+                            )
+                            database.setValue(newUser)
+                        }
+                        verificarRoleDoUsuario(user.uid)
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Falha na autenticação com o Google", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    private fun verificarRoleDoUsuario(userId: String) {
+        val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
+
+        database.get().addOnSuccessListener { snapshot ->
+            val role = snapshot.child("role").getValue(String::class.java) ?: "user"
+
+            val bottomNavigationView = requireActivity().findViewById<View>(R.id.bottomNavigationView)
+            bottomNavigationView?.visibility = View.VISIBLE
+
+            Toast.makeText(requireContext(), "Login bem-sucedido!", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+
+        }.addOnFailureListener {
+            Toast.makeText(requireContext(), "Erro ao verificar a role do usuário.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -37,37 +37,37 @@
             android:layout_height="24dp"
             android:src="@drawable/xmark"
             android:contentDescription="@string/close"
-            android:tint="@color/gray" />
+            android:tint="@color/black" />
     </LinearLayout>
 
-    <!-- Profile Image -->
-    <FrameLayout
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp">
+<!--    &lt;!&ndash; Profile Image &ndash;&gt;-->
+<!--    <FrameLayout-->
+<!--        android:layout_width="150dp"-->
+<!--        android:layout_height="150dp"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:layout_marginBottom="16dp">-->
 
-        <!-- Imagem do perfil -->
-        <ImageView
-            android:id="@+id/register_profile_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/user_default"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/profile_picture"
-            android:background="@drawable/circle_background" />
+<!--        &lt;!&ndash; Imagem do perfil &ndash;&gt;-->
+<!--        <ImageView-->
+<!--            android:id="@+id/register_profile_image"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:src="@drawable/user_default"-->
+<!--            android:scaleType="centerCrop"-->
+<!--            android:contentDescription="@string/profile_picture"-->
+<!--            android:background="@drawable/circle_background" />-->
 
-        <!-- Botão de upload sobreposto -->
-        <ImageView
-            android:id="@+id/upload_profile_image_button"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="12dp"
-            android:src="@drawable/plus_circle"
-            android:contentDescription="@string/select_image"
-            android:background="@drawable/circle_background" />
-    </FrameLayout>
+<!--        &lt;!&ndash; Botão de upload sobreposto &ndash;&gt;-->
+<!--        <ImageView-->
+<!--            android:id="@+id/upload_profile_image_button"-->
+<!--            android:layout_width="32dp"-->
+<!--            android:layout_height="32dp"-->
+<!--            android:layout_gravity="bottom|end"-->
+<!--            android:layout_margin="12dp"-->
+<!--            android:src="@drawable/plus_circle"-->
+<!--            android:contentDescription="@string/select_image"-->
+<!--            android:background="@drawable/circle_background" />-->
+<!--    </FrameLayout>-->
 
 
     <!-- Input Fields -->

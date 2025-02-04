@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioButton
@@ -13,148 +12,133 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.GenericTypeIndicator
 import com.quest.food.R
 
-class PopupAddressFragment : DialogFragment() {
+class PopupAddressFragment(private val userId: String? = null) : DialogFragment() {
 
-    private lateinit var editTextStreet: EditText
-    private lateinit var editTextNumber: EditText
-    private lateinit var editTextComplement: EditText
-    private lateinit var editTextNeighborhood: EditText
-    private lateinit var editTextCity: EditText
-    private lateinit var editTextState: EditText
-    private lateinit var editTextPostalCode: EditText
+    private lateinit var streetEditText: EditText
+    private lateinit var numberEditText: EditText
+    private lateinit var complementEditText: EditText
+    private lateinit var neighborhoodEditText: EditText
+    private lateinit var cityEditText: EditText
+    private lateinit var stateEditText: EditText
+    private lateinit var postalCodeEditText: EditText
     private lateinit var radioHome: RadioButton
     private lateinit var radioWork: RadioButton
-    private lateinit var buttonSaveEditAddress: Button
+    private lateinit var buttonEditSave: Button
+
+    private val currentUserId: String? by lazy {
+        userId ?: FirebaseAuth.getInstance().currentUser?.uid
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-
-        if (currentUser == null || currentUser.isAnonymous) {
-            Toast.makeText(requireContext(), "Faça login para adicionar um endereço.", Toast.LENGTH_SHORT).show()
-            dismiss()
-            return null
-        }
-
         return inflater.inflate(R.layout.fragment_popup_address, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        editTextStreet = view.findViewById(R.id.editTextStreet)
-        editTextNumber = view.findViewById(R.id.editTextNumber)
-        editTextComplement = view.findViewById(R.id.editTextComplement)
-        editTextNeighborhood = view.findViewById(R.id.editTextNeighborhood)
-        editTextCity = view.findViewById(R.id.editTextCity)
-        editTextState = view.findViewById(R.id.editTextState)
-        editTextPostalCode = view.findViewById(R.id.editTextPostalCode)
+        streetEditText = view.findViewById(R.id.editTextStreet)
+        numberEditText = view.findViewById(R.id.editTextNumber)
+        complementEditText = view.findViewById(R.id.editTextComplement)
+        neighborhoodEditText = view.findViewById(R.id.editTextNeighborhood)
+        cityEditText = view.findViewById(R.id.editTextCity)
+        stateEditText = view.findViewById(R.id.editTextState)
+        postalCodeEditText = view.findViewById(R.id.editTextPostalCode)
         radioHome = view.findViewById(R.id.radioHome)
         radioWork = view.findViewById(R.id.radioWork)
-        buttonSaveEditAddress = view.findViewById(R.id.buttonSaveAddress)
+        buttonEditSave = view.findViewById(R.id.buttonSaveAddress)
 
-        val currentUser = FirebaseAuth.getInstance().currentUser ?: return
-        loadOrEnableFields(currentUser.uid)
+        loadAddressData()
 
-        buttonSaveEditAddress.setOnClickListener {
-            if (buttonSaveEditAddress.text == "Editar") {
+        buttonEditSave.setOnClickListener {
+            if (buttonEditSave.text == "Editar") {
                 enableFieldsForEditing()
             } else {
-                saveAddressToDatabase(currentUser.uid)
+                saveAddressData()
             }
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
-    }
-
-    private fun loadOrEnableFields(userId: String) {
-        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId).child("address")
+    private fun loadAddressData() {
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users")
+            .child(currentUserId ?: return).child("address")
 
         databaseReference.get().addOnSuccessListener { snapshot ->
-            val typeIndicator = object : GenericTypeIndicator<Map<String, Any>>() {}
-            val address = snapshot.getValue(typeIndicator) // Forma segura de extrair o mapa
+            streetEditText.setText(snapshot.child("street").getValue(String::class.java) ?: "")
+            numberEditText.setText(snapshot.child("number").getValue(String::class.java) ?: "")
+            complementEditText.setText(snapshot.child("complement").getValue(String::class.java) ?: "")
+            neighborhoodEditText.setText(snapshot.child("neighborhood").getValue(String::class.java) ?: "")
+            cityEditText.setText(snapshot.child("city").getValue(String::class.java) ?: "")
+            stateEditText.setText(snapshot.child("state").getValue(String::class.java) ?: "")
+            postalCodeEditText.setText(snapshot.child("postalCode").getValue(String::class.java) ?: "")
 
-            if (address != null) {
-                populateFields(address)
-                setFieldsEnabled(false)
-                buttonSaveEditAddress.text = "Editar"
-            } else {
-                setFieldsEnabled(true)
-                buttonSaveEditAddress.text = "Salvar"
+            val addressType = snapshot.child("type").getValue(String::class.java)
+            if (addressType == "Casa") {
+                radioHome.isChecked = true
+            } else if (addressType == "Trabalho") {
+                radioWork.isChecked = true
             }
+
+            setFieldsEnabled(false)
+            buttonEditSave.text = "Editar"
         }.addOnFailureListener {
             Toast.makeText(requireContext(), "Erro ao carregar endereço.", Toast.LENGTH_SHORT).show()
             Log.e("PopupAddressFragment", "Erro ao buscar endereço: ${it.message}")
         }
     }
 
-
-    private fun populateFields(address: Map<String, Any>) {
-        editTextStreet.setText(address["street"] as? String ?: "")
-        editTextNumber.setText(address["number"] as? String ?: "")
-        editTextComplement.setText(address["complement"] as? String ?: "")
-        editTextNeighborhood.setText(address["neighborhood"] as? String ?: "")
-        editTextCity.setText(address["city"] as? String ?: "")
-        editTextState.setText(address["state"] as? String ?: "")
-        editTextPostalCode.setText(address["postalCode"] as? String ?: "")
-
-        val addressType = address["type"] as? String
-        if (addressType == "Casa") {
-            radioHome.isChecked = true
-        } else {
-            radioWork.isChecked = true
-        }
-    }
-
     private fun setFieldsEnabled(enabled: Boolean) {
-        editTextStreet.isEnabled = enabled
-        editTextNumber.isEnabled = enabled
-        editTextComplement.isEnabled = enabled
-        editTextNeighborhood.isEnabled = enabled
-        editTextCity.isEnabled = enabled
-        editTextState.isEnabled = enabled
-        editTextPostalCode.isEnabled = enabled
+        streetEditText.isEnabled = enabled
+        numberEditText.isEnabled = enabled
+        complementEditText.isEnabled = enabled
+        neighborhoodEditText.isEnabled = enabled
+        cityEditText.isEnabled = enabled
+        stateEditText.isEnabled = enabled
+        postalCodeEditText.isEnabled = enabled
         radioHome.isEnabled = enabled
         radioWork.isEnabled = enabled
     }
 
     private fun enableFieldsForEditing() {
         setFieldsEnabled(true)
-        buttonSaveEditAddress.text = "Salvar"
+        buttonEditSave.text = "Salvar"
     }
 
-    private fun saveAddressToDatabase(userId: String) {
-        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId).child("address")
+    private fun saveAddressData() {
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users")
+            .child(currentUserId ?: return).child("address")
 
-        val address = mapOf(
-            "street" to editTextStreet.text.toString(),
-            "number" to editTextNumber.text.toString(),
-            "complement" to editTextComplement.text.toString(),
-            "neighborhood" to editTextNeighborhood.text.toString(),
-            "city" to editTextCity.text.toString(),
-            "state" to editTextState.text.toString(),
-            "postalCode" to editTextPostalCode.text.toString(),
+        val updatedAddress = mapOf(
+            "street" to streetEditText.text.toString(),
+            "number" to numberEditText.text.toString(),
+            "complement" to complementEditText.text.toString(),
+            "neighborhood" to neighborhoodEditText.text.toString(),
+            "city" to cityEditText.text.toString(),
+            "state" to stateEditText.text.toString(),
+            "postalCode" to postalCodeEditText.text.toString(),
             "type" to if (radioHome.isChecked) "Casa" else "Trabalho"
         )
 
-        databaseReference.setValue(address).addOnSuccessListener {
-            Toast.makeText(requireContext(), "Endereço salvo com sucesso.", Toast.LENGTH_SHORT).show()
+        databaseReference.setValue(updatedAddress).addOnSuccessListener {
+            Toast.makeText(requireContext(), "Endereço atualizado com sucesso.", Toast.LENGTH_SHORT).show()
             setFieldsEnabled(false)
-            buttonSaveEditAddress.text = "Editar"
+            buttonEditSave.text = "Editar"
         }.addOnFailureListener {
-            Toast.makeText(requireContext(), "Erro ao salvar o endereço.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Erro ao atualizar o endereço.", Toast.LENGTH_SHORT).show()
             Log.e("PopupAddressFragment", "Erro ao salvar endereço: ${it.message}")
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
     }
 }

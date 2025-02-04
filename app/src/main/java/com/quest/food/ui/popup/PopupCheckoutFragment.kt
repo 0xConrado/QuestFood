@@ -1,5 +1,6 @@
 package com.quest.food.ui.popup
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -14,19 +15,23 @@ import com.google.firebase.database.FirebaseDatabase
 import com.quest.food.databinding.FragmentPopupCheckoutBinding
 import com.quest.food.model.CartItem
 import com.quest.food.model.Order
+import com.quest.food.model.User
+import com.quest.food.viewmodel.CartViewModel
+import com.quest.food.viewmodel.OrderViewModel
 import com.quest.food.viewmodel.UserViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PopupCheckoutFragment : DialogFragment() {
+class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : DialogFragment() {
 
     private var _binding: FragmentPopupCheckoutBinding? = null
     private val binding get() = _binding!!
     private val userViewModel: UserViewModel by viewModels()
+    private val orderViewModel: OrderViewModel by viewModels()
+    private val cartViewModel: CartViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Define o estilo para tela cheia
         setStyle(STYLE_NORMAL, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen)
     }
 
@@ -41,100 +46,67 @@ class PopupCheckoutFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userViewModel.loadUserData()
-        val cartItems = arguments?.getParcelableArrayList<CartItem>("cartItems") ?: emptyList()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        userViewModel.getUserById(userId) { user ->
+            user?.let {
+                val cartItems = arguments?.getParcelableArrayList<CartItem>("cartItems") ?: emptyList()
 
-        binding.buttonConfirmOrder.setOnClickListener {
-            val paymentMethod = if (binding.radioCard.isChecked) "Cartão de Crédito/Débito" else "Dinheiro"
-            val deliveryOption = if (binding.radioDelivery.isChecked) "Delivery" else "Retirada"
-            val observation = binding.observationField.text.toString()
+                binding.buttonConfirmOrder.setOnClickListener {
+                    val paymentMethod = if (binding.radioCard.isChecked) "Cartão de Crédito/Débito" else "Dinheiro"
+                    val deliveryOption = if (binding.radioDelivery.isChecked) "Delivery" else "Retirada"
+                    val observation = binding.observationField.text.toString()
 
-            val user = userViewModel.user.value
-            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "" // ✅ Correção do userId
+                    val totalPrice = cartItems.sumOf { it.price * it.quantity }
+                    val deliveryFee = if (deliveryOption == "Delivery") 5.00 else 0.00
+                    val finalTotal = totalPrice + deliveryFee
 
-            val totalPrice = cartItems.sumOf { it.price * it.quantity }
-            val deliveryFee = if (deliveryOption == "Delivery") 5.00 else 0.00
-            val finalTotal = totalPrice + deliveryFee
+                    val database = FirebaseDatabase.getInstance().getReference("orders")
+                    val orderId = database.push().key ?: return@setOnClickListener
 
-            val order = Order(
-                id = "",
-                userId = userId, // ✅ Correção aqui
-                items = cartItems,
-                total = finalTotal,
-                status = "Aguardando Aprovação",
-                paymentMethod = paymentMethod,
-                deliveryOption = deliveryOption,
-                observation = observation,
-                timestamp = System.currentTimeMillis()
-            )
+                    val order = Order(
+                        id = orderId,
+                        userId = userId,
+                        items = cartItems,
+                        total = finalTotal,
+                        status = "Aguardando Aprovação",
+                        paymentMethod = paymentMethod,
+                        deliveryOption = deliveryOption,
+                        observation = observation,
+                        timestamp = System.currentTimeMillis()
+                    )
 
-            sendOrderViaWhatsApp(paymentMethod, deliveryOption, observation, cartItems)
-            saveOrderToFirebase(order)
+                    saveOrderToFirebase(order) {
+                        orderViewModel.clearUserCart(userId, {
+                            requireContext().safeToast("Carrinho limpo com sucesso!")
+                            cartViewModel.loadCartItems()
+
+                            // ✅ Chama o callback para informar o CartFragment
+                            onCartCleared?.invoke()
+
+                            dismiss() // Fecha o Popup
+                        }, {
+                            requireContext().safeToast("Erro ao limpar o carrinho!")
+                        })
+                    }
+                }
+            } ?: run {
+                requireContext().safeToast("Falha ao carregar dados do usuário.")
+            }
         }
     }
 
-    private fun sendOrderViaWhatsApp(paymentMethod: String, deliveryOption: String, observation: String, cartItems: List<CartItem>) {
-        val user = userViewModel.user.value
-        val address = user?.address // ✅ Certifique-se que Address existe no User
-
-        val phoneNumber = "+5537999611408"
-        //val phoneNumber = "+5537999696735" // thiago
-        val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        val currentTime = dateFormat.format(Date())
-        val orderNumber = UUID.randomUUID().toString().take(8)
-
-        val items = cartItems.joinToString("\n------------------------------\n") { item ->
-            "➡ ${item.quantity}x ${item.productName} (R$${"%.2f".format(item.price)})"
-        }
-
-        val totalPrice = cartItems.sumOf { it.price * it.quantity }
-        val deliveryFee = if (deliveryOption == "Delivery") 5.00 else 0.0
-        val finalTotal = totalPrice + deliveryFee
-
-        val orderLink = "https://questfood.app/pedido/$orderNumber"
-
-        val message = """
-            Pedido Quest Food ($currentTime): $orderNumber
-            Estimativa: 30 - 50 minutos
-
-            Acompanhe o pedido👇: $orderLink
-
-            Tipo: $deliveryOption
-            NOME: ${user?.username}
-            Fone: ${user?.phone}
-            Endereço: ${address?.street}, ${address?.number}
-            CEP: ${address?.postalCode}
-            Bairro: ${address?.neighborhood}
-            Complemento: ${address?.complement}
-            ------------------------------
-            $items
-            ------------------------------
-            Itens: R$${"%.2f".format(totalPrice)}
-            Entrega: R$${"%.2f".format(deliveryFee)}
-            TOTAL: R$${"%.2f".format(finalTotal)}
-            ------------------------------
-            Pagamento: $paymentMethod
-
-            Observação: $observation
-        """.trimIndent()
-
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse("https://wa.me/$phoneNumber?text=${Uri.encode(message)}")
-        }
-        startActivity(intent)
-    }
-
-    private fun saveOrderToFirebase(order: Order) {
+    private fun saveOrderToFirebase(order: Order, onSuccess: () -> Unit) {
         val database = FirebaseDatabase.getInstance().getReference("orders")
-        val orderId = database.push().key ?: return
-        order.id = orderId
-
-        database.child(orderId).setValue(order).addOnSuccessListener {
-            Toast.makeText(context, "Pedido enviado com sucesso!", Toast.LENGTH_SHORT).show()
-            dismiss()
+        database.child(order.id).setValue(order).addOnSuccessListener {
+            requireContext().safeToast("Pedido enviado com sucesso!")
+            onSuccess()
         }.addOnFailureListener {
-            Toast.makeText(context, "Erro ao salvar o pedido!", Toast.LENGTH_SHORT).show()
+            requireContext().safeToast("Erro ao salvar o pedido!")
         }
+    }
+
+    private fun Context.safeToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {

@@ -14,11 +14,12 @@ import com.quest.food.model.CartItem
 class CartAdapter(
     private var cartItems: MutableList<CartItem>,
     private val onProductClick: (CartItem) -> Unit,
-    private val onDeleteClick: (CartItem) -> Unit
+    private val onDeleteClick: (CartItem) -> Unit,
+    private val onCartCleared: () -> Unit // Callback para notificar quando o carrinho for limpo
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
 
     inner class CartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val itemCategoryProduct: TextView = itemView.findViewById(R.id.itemCategoryProduct) // ✅ Categoria + Produto
+        val itemCategoryProduct: TextView = itemView.findViewById(R.id.itemCategoryProduct)
         val itemQuantity: TextView = itemView.findViewById(R.id.itemQuantity)
         val itemPrice: TextView = itemView.findViewById(R.id.itemPrice)
         val expandIcon: ImageView = itemView.findViewById(R.id.expandIcon)
@@ -35,15 +36,12 @@ class CartAdapter(
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
         val item = cartItems[position]
 
-        // ✅ Mostra Categoria + Produto
         holder.itemCategoryProduct.text = "${item.categoryName} ${item.productName}"
         holder.itemQuantity.text = "Qtd: ${item.quantity}"
         holder.itemPrice.text = "R$ %.2f".format(item.price)
 
-        // 📌 Navegar para o detalhe do produto
         holder.itemCategoryProduct.setOnClickListener { onProductClick(item) }
 
-        // 🔽 Expandir/Fechar detalhes do item
         holder.expandIcon.setOnClickListener {
             if (holder.ingredientsContainer.visibility == View.VISIBLE) {
                 holder.ingredientsContainer.visibility = View.GONE
@@ -55,12 +53,20 @@ class CartAdapter(
             }
         }
 
-        // 🗑️ Confirmação de remoção do item
         holder.deleteIcon.setOnClickListener {
             AlertDialog.Builder(holder.itemView.context)
                 .setTitle("Remover do Carrinho")
                 .setMessage("Deseja remover '${item.productName}' do carrinho?")
-                .setPositiveButton("Sim") { _, _ -> onDeleteClick(item) }
+                .setPositiveButton("Sim") { _, _ ->
+                    onDeleteClick(item)
+                    cartItems.removeAt(position)
+                    notifyItemRemoved(position)
+                    notifyItemRangeChanged(position, cartItems.size)
+
+                    if (cartItems.isEmpty()) {
+                        onCartCleared() // Notifica quando o carrinho estiver vazio
+                    }
+                }
                 .setNegativeButton("Cancelar", null)
                 .show()
         }
@@ -84,5 +90,15 @@ class CartAdapter(
     fun updateCartItems(newItems: List<CartItem>) {
         cartItems = newItems.toMutableList()
         notifyDataSetChanged()
+    }
+
+    fun clearCart() {
+        cartItems.clear()
+        notifyDataSetChanged()
+        onCartCleared() // Notifica o fragmento que o carrinho foi limpo
+    }
+
+    fun notifyCartCleared() {
+        onCartCleared()
     }
 }

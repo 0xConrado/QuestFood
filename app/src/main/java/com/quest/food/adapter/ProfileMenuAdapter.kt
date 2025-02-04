@@ -3,34 +3,38 @@ package com.quest.food.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.quest.food.R
-import com.quest.food.databinding.ItemProfileMenuBinding
+import com.quest.food.model.ProfileMenuItem
 
 class ProfileMenuAdapter(
     private val menuItems: List<ProfileMenuItem>,
     private val onItemClick: (ProfileMenuItem) -> Unit
-) : RecyclerView.Adapter<ProfileMenuAdapter.MenuViewHolder>() {
+) : RecyclerView.Adapter<ProfileMenuAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MenuViewHolder {
-        val binding = ItemProfileMenuBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MenuViewHolder(binding)
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val icon = view.findViewById<ImageView>(R.id.menuIcon)
+        val title = view.findViewById<TextView>(R.id.menuTitle)
+
+        fun bind(item: ProfileMenuItem) {
+            icon.setImageResource(item.iconRes)
+            title.text = item.title
+            itemView.setOnClickListener { onItemClick(item) }
+        }
     }
 
-    override fun onBindViewHolder(holder: MenuViewHolder, position: Int) {
-        val item = menuItems[position]
-        holder.bind(item)
-        holder.itemView.setOnClickListener { onItemClick(item) }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_profile_menu, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(menuItems[position])
     }
 
     override fun getItemCount(): Int = menuItems.size
-
-    class MenuViewHolder(private val binding: ItemProfileMenuBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: ProfileMenuItem) {
-            binding.menuIcon.setImageResource(item.iconResId)
-            binding.menuTitle.text = item.title
-        }
-    }
 }
 
-data class ProfileMenuItem(val title: String, val iconResId: Int)

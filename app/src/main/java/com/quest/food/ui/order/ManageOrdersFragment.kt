@@ -29,22 +29,31 @@ class ManageOrdersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Configuração do RecyclerView
         binding.recyclerViewManageOrders.layoutManager = LinearLayoutManager(requireContext())
 
+        // Observa alterações na lista de pedidos
         orderViewModel.allOrders.observe(viewLifecycleOwner) { orders ->
-            binding.recyclerViewManageOrders.adapter = ManageOrdersAdapter(
-                orders,
-                onStatusChange = { order, newStatus ->
-                    orderViewModel.updateOrderStatus(order.id, newStatus)
-                    showToast("Status atualizado para: $newStatus")
-                },
-                onDeleteOrder = { order ->
-                    orderViewModel.deleteOrder(order.id)
-                    showToast("Pedido excluído com sucesso!")
-                }
-            )
+            if (orders.isNotEmpty()) {
+                binding.recyclerViewManageOrders.adapter = ManageOrdersAdapter(
+                    orders,
+                    onStatusChange = { order, newStatus ->
+                        orderViewModel.updateOrderStatus(order.id, newStatus)
+                        showToast("Status atualizado para: $newStatus")
+                        orderViewModel.loadAllOrders() // Atualiza a lista após mudança de status
+                    },
+                    onDeleteOrder = { order ->
+                        orderViewModel.deleteOrder(order.id)
+                        showToast("Pedido excluído com sucesso!")
+                        orderViewModel.loadAllOrders() // Atualiza a lista após exclusão
+                    }
+                )
+            } else {
+                showToast("Nenhum pedido disponível.")
+            }
         }
 
+        // Carrega todos os pedidos
         orderViewModel.loadAllOrders()
     }
 

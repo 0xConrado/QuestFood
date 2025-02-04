@@ -43,27 +43,34 @@ class OrderViewModel : ViewModel() {
             }
     }
 
-
     // Função para carregar todos os pedidos (não filtrados)
     fun loadAllOrders() {
         database.get()
             .addOnSuccessListener { snapshot ->
-                // Mapeia os dados para uma lista de objetos Order
                 val orders = snapshot.children.mapNotNull { it.getValue(Order::class.java) }
                 _allOrders.value = orders
             }
             .addOnFailureListener { exception ->
-                // Caso haja erro na consulta
                 _allOrders.value = emptyList()
                 exception.printStackTrace()
             }
+    }
+
+    fun loadSpecificOrder(orderId: String) {
+        val userId = auth.currentUser?.uid ?: return
+        database.child(orderId).get().addOnSuccessListener { snapshot ->
+            val order = snapshot.getValue(Order::class.java)
+            if (order?.userId == userId) {
+                _userOrders.value = listOf(order)
+            }
+        }
     }
 
     // Função para atualizar o status do pedido
     fun updateOrderStatus(orderId: String, newStatus: String) {
         database.child(orderId).child("status").setValue(newStatus)
             .addOnFailureListener { exception ->
-                exception.printStackTrace()  // Log de erro
+                exception.printStackTrace()
             }
     }
 
@@ -71,7 +78,7 @@ class OrderViewModel : ViewModel() {
     fun deleteOrder(orderId: String) {
         database.child(orderId).removeValue()
             .addOnFailureListener { exception ->
-                exception.printStackTrace()  // Log de erro
+                exception.printStackTrace()
             }
     }
 
@@ -79,7 +86,7 @@ class OrderViewModel : ViewModel() {
     fun updateOrderRating(orderId: String, rating: Int) {
         database.child(orderId).child("rating").setValue(rating)
             .addOnFailureListener { exception ->
-                exception.printStackTrace()  // Log de erro
+                exception.printStackTrace()
             }
     }
 
@@ -87,7 +94,17 @@ class OrderViewModel : ViewModel() {
     fun updateOrderDispute(orderId: String, dispute: String) {
         database.child(orderId).child("dispute").setValue(dispute)
             .addOnFailureListener { exception ->
-                exception.printStackTrace()  // Log de erro
+                exception.printStackTrace()
             }
+    }
+
+    // Função para limpar o carrinho do usuário
+    fun clearUserCart(userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val cartDatabase = FirebaseDatabase.getInstance().getReference("cart").child(userId)
+        cartDatabase.removeValue().addOnSuccessListener {
+            onSuccess()
+        }.addOnFailureListener { exception ->
+            onFailure(exception)
+        }
     }
 }

@@ -3,57 +3,192 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="12dp"
-    android:background="@android:color/darker_gray"
+    android:background="@drawable/banner_background"
     android:layout_marginBottom="8dp"
     android:elevation="2dp">
 
-<TextView
-android:id="@+id/textOrderNumber"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Pedido: 123ABC"
-android:textStyle="bold"
-android:textSize="16sp"
-android:textColor="@android:color/black" />
+    <TextView
+        android:id="@+id/textOrderNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pedido: 123ABC"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="@android:color/black" />
 
-<TextView
-android:id="@+id/textOrderStatus"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Status: Aguardando Aprovação"
-android:textSize="14sp"
-android:paddingTop="4dp"
-android:textColor="@android:color/black" />
+    <TextView
+        android:id="@+id/textOrderStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: Aguardando Aprovação"
+        android:textSize="16sp"
+        android:paddingTop="4dp"
+        android:textColor="@android:color/black" />
 
-<TextView
-android:id="@+id/textOrderTotal"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Total: R$50,00"
-android:textSize="14sp"
-android:paddingTop="4dp"
-android:textColor="@android:color/black" />
+    <TextView
+        android:id="@+id/textOrderTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total: R$50,00"
+        android:textSize="16sp"
+        android:paddingTop="4dp"
+        android:textColor="@android:color/black" />
 
-<LinearLayout
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:orientation="horizontal"
-android:paddingTop="8dp">
+    <!-- Botões de Avaliar e Contestar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
 
-<Button
-    android:id="@+id/buttonRate"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:text="Avaliar"
-    android:visibility="gone" />
+        <!-- Botão Avaliar -->
+        <Button
+            android:id="@+id/buttonRate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Avaliar"
+            android:visibility="gone"/> <!-- Inicialmente oculto -->
 
-<Button
-    android:id="@+id/buttonDispute"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:text="Contestar"
-    android:visibility="gone" />
-</LinearLayout>
+        <!-- Botão Contestar -->
+        <Button
+            android:id="@+id/buttonDispute"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Contestar"
+            android:visibility="gone"/> <!-- Inicialmente oculto -->
     </LinearLayout>
+
+    <!-- Botão para alternar entre "Ver Mais" e "Ver Menos" -->
+    <Button
+        android:id="@+id/buttonDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver Mais"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Layout expandido dos detalhes do pedido (inicialmente oculto) -->
+    <LinearLayout
+        android:id="@+id/orderDetailsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingTop="8dp">
+
+        <!-- Divider 1 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:text="Informações do Pedido"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"/>
+
+        <TextView
+            android:id="@+id/textOrderInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pedido Quest Food (14:07): 5df87b5b"
+            android:padding="8dp"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"/>
+
+        <!-- Divider 2 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:text="Informações do Usuário"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"/>
+
+        <TextView
+            android:id="@+id/textUserInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tipo: Delivery\nNOME: Rafael Conrado\nFone: (37) 99961-1408\nEndereço: Firmino Lopes Camara, 731\nCEP: 35557000\nBairro: Tupi\nComplemento: Apto 202"
+            android:padding="8dp"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"/>
+
+        <!-- Divider 3 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:text="Itens do Pedido"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"/>
+
+        <TextView
+            android:id="@+id/textItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1x Pepperoni (R$68,90)\n1x Frango c/ catupiry (R$68,90)\n1x Milho (R$68,90)"
+            android:padding="8dp"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"/>
+
+        <!-- Divider 4 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:id="@+id/textTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Itens: R$206,70\nEntrega: R$5,00\nTOTAL: R$211,70"
+            android:padding="8dp"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"/>
+
+        <!-- Divider 5 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:id="@+id/textPayment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pagamento: Dinheiro"
+            android:padding="8dp"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"/>
+
+        <!-- Divider 6 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:id="@+id/textObservation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="Observação: texto de observação teste"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"/>
+    </LinearLayout>
+</LinearLayout>

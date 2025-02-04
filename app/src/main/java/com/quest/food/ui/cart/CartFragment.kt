@@ -1,7 +1,5 @@
 package com.quest.food.ui.cart
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +37,8 @@ class CartFragment : Fragment() {
         cartAdapter = CartAdapter(
             mutableListOf(),
             onProductClick = { cartItem -> openProductDetail(cartItem) },
-            onDeleteClick = { cartItem -> cartViewModel.removeFromCart(cartItem) }
+            onDeleteClick = { cartItem -> cartViewModel.removeFromCart(cartItem) },
+            onCartCleared = { reloadCart() }
         )
 
         binding.cartRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -47,30 +46,52 @@ class CartFragment : Fragment() {
 
         cartViewModel.cartItems.observe(viewLifecycleOwner) { items ->
             cartAdapter.updateCartItems(items)
+            updateCartVisibility(items)
         }
 
         binding.buttonCheckout.setOnClickListener {
             val cartItems = cartViewModel.cartItems.value
             if (!cartItems.isNullOrEmpty()) {
-                userViewModel.loadUserData() // Ensure user data is loaded
-                val popupCheckout = PopupCheckoutFragment()
-                val bundle = Bundle().apply {
-                    putParcelableArrayList("cartItems", ArrayList(cartItems))
+                userViewModel.loadUserData()
+                userViewModel.userData.observe(viewLifecycleOwner) { user ->
+                    if (user != null) {
+                        val popupCheckout = PopupCheckoutFragment(onCartCleared = { reloadCart() }).apply {
+                            arguments = Bundle().apply {
+                                putParcelableArrayList("cartItems", ArrayList(cartItems))
+                                putSerializable("userData", user)
+                            }
+                        }
+                        popupCheckout.show(parentFragmentManager, "PopupCheckoutFragment")
+                    } else {
+                        Toast.makeText(requireContext(), "Erro ao carregar dados do usuário.", Toast.LENGTH_SHORT).show()
+                    }
                 }
-                popupCheckout.arguments = bundle
-                popupCheckout.show(parentFragmentManager, "PopupCheckoutFragment")
             } else {
                 Toast.makeText(requireContext(), "Seu carrinho está vazio!", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun updateCartVisibility(items: List<CartItem>) {
+        if (items.isEmpty()) {
+            binding.emptyCartMessage.visibility = View.VISIBLE
+            binding.buttonCheckout.visibility = View.GONE
+        } else {
+            binding.emptyCartMessage.visibility = View.GONE
+            binding.buttonCheckout.visibility = View.VISIBLE
+        }
     }
 
     private fun openProductDetail(cartItem: CartItem) {
         Toast.makeText(requireContext(), "Detalhes do produto: ${cartItem.productName}", Toast.LENGTH_SHORT).show()
+    }
+
+    fun reloadCart() {
+        cartViewModel.loadCartItems()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
