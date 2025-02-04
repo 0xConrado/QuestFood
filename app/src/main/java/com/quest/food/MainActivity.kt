@@ -3,7 +3,6 @@ package com.quest.food
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -11,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -42,6 +40,19 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
         binding.bottomNavigationView.setupWithNavController(navController)
 
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val titleTextView = findViewById<TextView>(R.id.title_text)
+            titleTextView.text = destination.label ?: "Quest Food"
+
+            // Ocultar o header em telas específicas, se necessário
+            val headerSection = findViewById<View>(R.id.header_section)
+            if (destination.id == R.id.splashFragment || destination.id == R.id.loginFragment) {
+                headerSection.visibility = View.GONE
+            } else {
+                headerSection.visibility = View.VISIBLE
+            }
+        }
+
         // Observar mudanças no usuário e atualizar o perfil
         observeUserProfile()
     }
@@ -63,8 +74,12 @@ class MainActivity : AppCompatActivity() {
 
                     Log.d("MainActivity", "Nome do usuário: $name")
 
-                    // **Acesse o fragmento ativo para atualizar o nome**
-                    val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.childFragmentManager?.fragments?.firstOrNull()
+                    // Atualiza o nome do usuário no layout ativo
+                    val currentFragment = supportFragmentManager
+                        .findFragmentById(R.id.nav_host_fragment)
+                        ?.childFragmentManager
+                        ?.fragments
+                        ?.firstOrNull()
 
                     currentFragment?.view?.findViewById<TextView>(R.id.profile_user_name)?.let { profileNameTextView ->
                         profileNameTextView.text = name
@@ -79,5 +94,4 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
 }

@@ -66,6 +66,7 @@ class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : D
                     val order = Order(
                         id = orderId,
                         userId = userId,
+                        userName = user.username, // Incluído o nome do usuário
                         items = cartItems,
                         total = finalTotal,
                         status = "Aguardando Aprovação",
@@ -82,7 +83,8 @@ class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : D
 
                             // ✅ Chama o callback para informar o CartFragment
                             onCartCleared?.invoke()
-
+                            // ✅ Envia a mensagem para o WhatsApp após limpar o carrinho
+                            sendOrderViaWhatsApp(paymentMethod, deliveryOption, observation, cartItems, user, orderId)
                             dismiss() // Fecha o Popup
                         }, {
                             requireContext().safeToast("Erro ao limpar o carrinho!")
@@ -94,6 +96,66 @@ class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : D
             }
         }
     }
+
+    private fun sendOrderViaWhatsApp(
+        paymentMethod: String,
+        deliveryOption: String,
+        observation: String,
+        cartItems: List<CartItem>,
+        user: User,
+        orderId: String
+    ) {
+        val address = user.address
+
+        val phoneNumber = "+5537999611408"
+        val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val currentTime = dateFormat.format(Date())
+
+        val items = cartItems.joinToString("\n        ") { item ->
+            "   ➡️  ${item.quantity}x ${item.categoryName} ${item.productName} - R$${"%.2f".format(item.price)}"
+        }
+
+        val totalPrice = cartItems.sumOf { it.price * it.quantity }
+        val deliveryFee = if (deliveryOption == "Delivery") 5.00 else 0.0
+        val finalTotal = totalPrice + deliveryFee
+
+        val orderLink = "https://questfood.app/pedido/$orderId"
+
+        val message = """
+        🛒 *Pedido Quest Food* ($currentTime)
+        📦 *Número do Pedido:* $orderId
+        ⏰ *Estimativa:* 30 - 50 minutos
+
+        🔗 *Acompanhe o pedido:* $orderLink
+
+        🚚 *Tipo de Entrega:* $deliveryOption
+        🙍 *Nome:* ${user.username}
+        📱 *Telefone:* ${user.phone}
+        🏠 *Endereço:* ${address.street}, ${address.number}
+        📍 *Bairro:* ${address.neighborhood}
+        🗺️ *Complemento:* ${address.complement}
+        📮 *CEP:* ${address.postalCode}
+
+        🍽️ *Itens do Pedido:*
+        --------------------------------------------------------------------------
+        $items
+        --------------------------------------------------------------------------
+        💰 *Subtotal:* R$${"%.2f".format(totalPrice)}
+        🚚 *Taxa de Entrega:* R$${"%.2f".format(deliveryFee)}
+        💵 *TOTAL:* *R$${"%.2f".format(finalTotal)}*
+
+        💳 *Forma de Pagamento:* $paymentMethod
+        📝 *Observação:* ${if (observation.isNotEmpty()) observation else "Nenhuma"}
+    """.trimIndent()
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse("https://wa.me/$phoneNumber?text=${Uri.encode(message)}")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+        startActivity(intent)
+    }
+
+
 
     private fun saveOrderToFirebase(order: Order, onSuccess: () -> Unit) {
         val database = FirebaseDatabase.getInstance().getReference("orders")

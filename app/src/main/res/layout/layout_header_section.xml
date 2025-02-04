@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/app_name"
+        android:text="Título"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/black"
@@ -30,9 +30,9 @@
 
     <!-- Settings Icon -->
     <ImageView
-        android:id="@+id/settings_icon"
+        android:id="@+id/closeButton"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/settings"
+        android:src="@drawable/xmark"
         android:contentDescription="@string/settings" />
 </LinearLayout>

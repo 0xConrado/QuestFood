@@ -1,38 +1,45 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/cartTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Seu Carrinho"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+    <!-- RecyclerView para listar os itens do carrinho -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cartRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCheckout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Mensagem de Carrinho Vazio -->
     <TextView
         android:id="@+id/emptyCartMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Seu carrinho está vazio."
-        android:textSize="16sp"
         android:textColor="@android:color/darker_gray"
         android:gravity="center"
         android:visibility="gone"
-        android:layout_marginTop="16dp"/>
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/buttonCheckout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/cartRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+    <!-- Botão de Finalizar Compra fixo na parte inferior -->
     <Button
         android:id="@+id/buttonCheckout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Finalizar Compra"
-        android:layout_marginTop="16dp"/>
-</LinearLayout>
+        android:background="@color/red"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

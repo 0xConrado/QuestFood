@@ -67,7 +67,7 @@ class OrderHistoryAdapter(
         val orderDate = dateFormat.format(Date(order.timestamp))
 
         holder.textOrderInfo.text = "Pedido realizado em: $orderDate"
-        holder.textUserInfo.text = "Usuário ID: ${order.userId}"
+        holder.textUserInfo.text = "Usuário: ${order.userName}"
         holder.textItems.text = order.items.joinToString("\n") { "${it.quantity}x ${it.productName} (R$${"%.2f".format(it.price)})" }
         holder.textTotal.text = "Total do pedido: R$%.2f".format(order.total)
         holder.textPayment.text = "Pagamento: ${order.paymentMethod}"

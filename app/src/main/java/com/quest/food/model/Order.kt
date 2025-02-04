@@ -1,15 +1,15 @@
 package com.quest.food.model
 
 data class Order(
-    var id: String = "",              // ID do pedido gerado pelo Firebase
-    val userId: String = "",          // ID do usuário (UID do Firebase)
+    val id: String = "",
+    val userId: String = "",
+    val userName: String = "", // Adicionado o nome do usuário
     val items: List<CartItem> = emptyList(),
-    val total: Double = 0.0,          // Valor total do pedido
-    val status: String = "Aguardando Aprovação", // Status inicial do pedido
-    val paymentMethod: String = "",   // Metodo de pagamento (Dinheiro, Cartão, etc.)
-    val deliveryOption: String = "",  // Delivery ou Retirada
-    val observation: String = "",     // Observação opcional do pedido
-    val timestamp: Long = System.currentTimeMillis(), // Data/hora do pedido ✅ corrigido
-    val rating: Int? = null,          // Avaliação do pedido (opcional)
-    val dispute: String? = null       // Contestação do pedido (opcional)
+    val total: Double = 0.0,
+    val status: String = "Aguardando Aprovação",
+    val paymentMethod: String = "",
+    val deliveryOption: String = "",
+    val observation: String = "",
+    val timestamp: Long = System.currentTimeMillis()
 )
+

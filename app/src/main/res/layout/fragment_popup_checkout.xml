@@ -12,7 +12,7 @@
         android:text="Forma de Pagamento"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:paddingBottom="8dp" />
+        android:padding="8dp" />
 
     <RadioGroup
         android:id="@+id/paymentGroup"
