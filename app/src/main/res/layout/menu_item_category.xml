@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:clipToOutline="true"
-        android:outlineProvider="background" />
+        android:background="@drawable/banner_background"/>
 
     <!-- Botões de Edição e Exclusão -->
     <LinearLayout

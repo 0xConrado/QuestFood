@@ -46,9 +46,10 @@
     <string name="select_image">ADD Imagem</string>
 
     <!-- Estilo para o botão Google -->
-    <string name="default_web_client_id">107784783985-8vchan6ik13bns3lvo19ot94d2t6dr7u.apps.googleusercontent.com</string>
+    <string name="default_web_client_id">784322883731-fd7ceajlu2o1jf5eb892il88fq3613bg.apps.googleusercontent.com</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="promotion">Aproveite as promoções!!!</string>
     <!-- Estilo padrão para todos os EditText -->
 
 </resources>

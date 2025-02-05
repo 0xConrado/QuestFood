@@ -1,32 +1,32 @@
 package com.quest.food.ui.home
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.quest.food.R
-import com.quest.food.adapter.CategoriesAdapter
-import com.quest.food.databinding.DialogAddCategoryBinding
+import androidx.viewpager2.widget.ViewPager2
+import com.quest.food.adapter.PromotionAdapter
 import com.quest.food.databinding.FragmentHomeBinding
-import com.quest.food.model.CategoryMenuItem
-import com.quest.food.viewmodel.HomeViewModel
+import com.quest.food.model.ProductItem
+import com.quest.food.viewmodel.ProductViewModel
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val homeViewModel: HomeViewModel by viewModels()
-    private lateinit var adapter: CategoriesAdapter
-    private var isAdmin: Boolean = false
+    private val productViewModel: ProductViewModel by viewModels()
+    private lateinit var promotionAdapter: PromotionAdapter
+
+    private val handler = Handler(Looper.getMainLooper())
+    private var currentPage = 0
+    private val slideInterval = 10000L // Intervalo de 10 segundos
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,111 +39,52 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupCategoriesAdapter()
-
-        homeViewModel.user.observe(viewLifecycleOwner) { user ->
-            isAdmin = user?.role == "admin"
-            setupCategoriesAdapter()
+        // ✅ Adapter configurado com listener para o botão "Shop Now"
+        promotionAdapter = PromotionAdapter(mutableListOf()) { product ->
+            navigateToProductDetail(product)
         }
 
-        homeViewModel.categories.observe(viewLifecycleOwner) { categories ->
-            adapter.updateCategories(categories)
+        binding.promotionViewPager.adapter = promotionAdapter
+        binding.promotionViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+
+        // ✅ Observa as promoções do ViewModel
+        productViewModel.products.observe(viewLifecycleOwner) { products ->
+            val promotions = products.filter { it.isPromotion }
+            promotionAdapter.updatePromotions(promotions)
+            startAutoSlide(promotions.size)
         }
     }
 
-    private fun setupCategoriesAdapter() {
-        adapter = CategoriesAdapter(
-            categories = mutableListOf(),
-            isAdmin = isAdmin,
-            onCategoryClick = { selectedCategory -> openCategoryDetail(selectedCategory) },
-            onAddCategoryClick = { if (isAdmin) showAddCategoryDialog() },
-            onEditCategory = { category -> showEditCategoryDialog(category) },
-            onDeleteCategory = { category -> deleteCategory(category) } // ✅ Apenas exclusão direta
+    // ✅ Navegação para ProductDetailFragment
+    private fun navigateToProductDetail(product: ProductItem) {
+        val action = HomeFragmentDirections.actionHomeFragmentToProductDetailFragment(
+            productId = product.id,
+            categoryId = product.categoryId
         )
-
-        binding.categoriesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.categoriesRecyclerView.adapter = adapter
+        findNavController().navigate(action)
     }
 
-    private fun deleteCategory(category: CategoryMenuItem) {
-        homeViewModel.deleteCategory(category)
-        Toast.makeText(requireContext(), "${category.title} excluída com sucesso!", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun openCategoryDetail(category: CategoryMenuItem) {
-        Toast.makeText(requireContext(), "Abrir detalhes de: ${category.title}", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun showAddCategoryDialog() {
-        val dialogBinding = DialogAddCategoryBinding.inflate(LayoutInflater.from(requireContext()))
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogBinding.root)
-            .create()
-
-        dialogBinding.categoryImageUrlEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                val url = s.toString()
-                Glide.with(this@HomeFragment).load(url).into(dialogBinding.categoryImagePreview)
+    // ✅ Função para iniciar o slideshow automático
+    private fun startAutoSlide(itemCount: Int) {
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                if (itemCount > 0) {
+                    currentPage = (currentPage + 1) % itemCount
+                    binding.promotionViewPager.setCurrentItem(currentPage, true)
+                    handler.postDelayed(this, slideInterval)
+                }
             }
-        })
-
-        dialogBinding.addCategoryButton.setOnClickListener {
-            val title = dialogBinding.categoryTitleEditText.text.toString()
-            val subtitle = dialogBinding.categorySubtitleEditText.text.toString()
-            val imageUrl = dialogBinding.categoryImageUrlEditText.text.toString()
-
-            if (title.isNotBlank() && subtitle.isNotBlank() && imageUrl.isNotBlank()) {
-                val newCategory = CategoryMenuItem(title = title, subtitle = subtitle, imageUrl = imageUrl)
-                homeViewModel.addCategory(newCategory)
-                dialog.dismiss()
-            } else {
-                Toast.makeText(requireContext(), "Preencha todos os campos", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        dialogBinding.cancelButton.setOnClickListener { dialog.dismiss() }
-        dialog.show()
+        }, slideInterval)
     }
 
-    private fun showEditCategoryDialog(category: CategoryMenuItem) {
-        val dialogBinding = DialogAddCategoryBinding.inflate(LayoutInflater.from(requireContext()))
-        dialogBinding.categoryTitleEditText.setText(category.title)
-        dialogBinding.categorySubtitleEditText.setText(category.subtitle)
-        dialogBinding.categoryImageUrlEditText.setText(category.imageUrl)
-
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogBinding.root)
-            .setTitle("Editar Categoria")
-            .create()
-
-        dialogBinding.addCategoryButton.text = "Salvar"
-        dialogBinding.addCategoryButton.setOnClickListener {
-            val updatedCategory = CategoryMenuItem(
-                id = category.id,  // ✅ Mantém o ID da categoria para garantir a atualização correta
-                title = dialogBinding.categoryTitleEditText.text.toString(),
-                subtitle = dialogBinding.categorySubtitleEditText.text.toString(),
-                imageUrl = dialogBinding.categoryImageUrlEditText.text.toString()
-            )
-            homeViewModel.updateCategory(updatedCategory)
-            dialog.dismiss()
-        }
-
-        dialogBinding.cancelButton.setOnClickListener { dialog.dismiss() }
-        dialog.show()
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacksAndMessages(null) // Para o slideshow ao pausar
     }
 
-    private fun confirmDeleteCategory(category: CategoryMenuItem) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Excluir Categoria")
-            .setMessage("Tem certeza que deseja excluir ${category.title}?")
-            .setPositiveButton("Sim") { _, _ ->
-                homeViewModel.deleteCategory(category)
-                Toast.makeText(requireContext(), "${category.title} excluda", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
+    override fun onResume() {
+        super.onResume()
+        startAutoSlide(promotionAdapter.itemCount) // Reinicia o slideshow ao voltar
     }
 
     override fun onDestroyView() {

@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.quest.food">
 
+    <!-- Permissões necessárias para o login com o Google -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -12,12 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuestFood">
 
-        <!-- Meta-data necessária para Google Sign-In -->
+        <!-- Meta-data necessária para o Google Sign-In -->
         <meta-data
             android:name="com.google.android.gms.auth.api.signin.WebClientId"
             android:value="@string/default_web_client_id"/>
 
-        <!-- Atividade Principal gerenciando os Fragments -->
+        <!-- Atividade Principal que gerencia os Fragments -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -27,5 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 </manifest>

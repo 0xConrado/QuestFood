@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                         ?.fragments
                         ?.firstOrNull()
 
-                    currentFragment?.view?.findViewById<TextView>(R.id.profile_user_name)?.let { profileNameTextView ->
+                    currentFragment?.view?.findViewById<TextView>(R.id.profileUserName)?.let { profileNameTextView ->
                         profileNameTextView.text = name
                     } ?: Log.e("MainActivity", "Erro: profile_user_name não encontrado no fragmento ativo")
                 } else {

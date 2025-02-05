@@ -1,28 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@android:color/white">
 
-    <!-- Título da Tela -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Missões Disponíveis"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:gravity="center"/>
+    <!-- Missão do Dia -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewQuests"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
 
-    <!-- Placeholder para a lista de missões -->
-    <TextView
-        android:id="@+id/questPlaceholder"
-        android:layout_width="wrap_content"
+    <!-- Botão Criar Quest -->
+    <Button
+        android:id="@+id/createQuestButton"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Aqui serão listadas as missões"
+        android:text="Criar Missão"
         android:textSize="16sp"
-        android:gravity="center"
-        android:paddingTop="20dp"/>
+        android:padding="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"/>
+
 </LinearLayout>

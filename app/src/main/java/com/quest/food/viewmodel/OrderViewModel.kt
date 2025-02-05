@@ -1,110 +1,99 @@
 package com.quest.food.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.quest.food.model.Order
-import com.google.firebase.database.DatabaseError
 
 class OrderViewModel : ViewModel() {
 
-    private val database = FirebaseDatabase.getInstance().getReference("orders")
-    private val auth = FirebaseAuth.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().getReference("orders")
+    private val cartDatabase: DatabaseReference = FirebaseDatabase.getInstance().getReference("cart")
 
-    private val _userOrders = MutableLiveData<List<Order>>()
-    val userOrders: LiveData<List<Order>> get() = _userOrders
+    // LiveData para pedidos do usuário atual
+    private val _orders = MutableLiveData<List<Order>>()
+    val orders: LiveData<List<Order>> get() = _orders
 
+    // LiveData para todos os pedidos (uso de administrador)
     private val _allOrders = MutableLiveData<List<Order>>()
     val allOrders: LiveData<List<Order>> get() = _allOrders
 
-    // Função para carregar os pedidos do usuário
-    fun loadUserOrders() {
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
-            Log.d("OrderViewModel", "Usuário não autenticado")
-            _userOrders.value = emptyList()
-            return
-        }
-
-        Log.d("OrderViewModel", "Buscando pedidos para o userId: $userId")
-
-        database.orderByChild("userId").equalTo(userId).get()
-            .addOnSuccessListener { snapshot ->
-                val orders = snapshot.children.mapNotNull { it.getValue(Order::class.java) }
-                Log.d("OrderViewModel", "Pedidos carregados: $orders")
-                _userOrders.value = orders
-            }
-            .addOnFailureListener { exception ->
-                Log.e("OrderViewModel", "Erro ao carregar pedidos", exception)
-                _userOrders.value = emptyList()
-            }
+    init {
+        loadOrders()  // Carregar pedidos do usuário ao iniciar
     }
 
-    // Função para carregar todos os pedidos (não filtrados)
-    fun loadAllOrders() {
-        database.get()
-            .addOnSuccessListener { snapshot ->
-                val orders = snapshot.children.mapNotNull { it.getValue(Order::class.java) }
-                _allOrders.value = orders
-            }
-            .addOnFailureListener { exception ->
-                _allOrders.value = emptyList()
-                exception.printStackTrace()
-            }
-    }
-
-    fun loadSpecificOrder(orderId: String) {
+    // Carrega os pedidos do usuário atual
+    fun loadOrders() {
         val userId = auth.currentUser?.uid ?: return
-        database.child(orderId).get().addOnSuccessListener { snapshot ->
-            val order = snapshot.getValue(Order::class.java)
-            if (order?.userId == userId) {
-                _userOrders.value = listOf(order)
-            }
-        }
+
+        database.orderByChild("userId").equalTo(userId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val ordersList = mutableListOf<Order>()
+                    for (orderSnapshot in snapshot.children) {
+                        val order = orderSnapshot.getValue(Order::class.java)
+                        order?.let { ordersList.add(it) }
+                    }
+                    _orders.value = ordersList
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    _orders.value = emptyList()
+                }
+            })
     }
 
-    // Função para atualizar o status do pedido
+    // Carrega todos os pedidos (para administradores)
+    fun loadAllOrders() {
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val allOrdersList = mutableListOf<Order>()
+                for (orderSnapshot in snapshot.children) {
+                    val order = orderSnapshot.getValue(Order::class.java)
+                    order?.let { allOrdersList.add(it) }
+                }
+                _allOrders.value = allOrdersList
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                _allOrders.value = emptyList()
+            }
+        })
+    }
+
+    // Atualiza o status de um pedido
     fun updateOrderStatus(orderId: String, newStatus: String) {
         database.child(orderId).child("status").setValue(newStatus)
-            .addOnFailureListener { exception ->
-                exception.printStackTrace()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    loadAllOrders()  // Atualiza a lista de pedidos após alteração
+                }
             }
     }
 
-    // Função para excluir um pedido
+    // Deleta um pedido específico
     fun deleteOrder(orderId: String) {
         database.child(orderId).removeValue()
-            .addOnFailureListener { exception ->
-                exception.printStackTrace()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    loadAllOrders()  // Atualiza a lista após exclusão
+                }
             }
     }
 
-    // Função para atualizar a avaliação de um pedido
-    fun updateOrderRating(orderId: String, rating: Int) {
-        database.child(orderId).child("rating").setValue(rating)
-            .addOnFailureListener { exception ->
-                exception.printStackTrace()
-            }
+    // Limpa o carrinho do usuário após o checkout
+    fun clearUserCart(
+        userId: String,
+        onSuccess: (() -> Unit)? = null,
+        onFailure: (() -> Unit)? = null
+    ) {
+        val cartDatabase = FirebaseDatabase.getInstance().getReference("cart")
+        cartDatabase.child(userId).removeValue()
+            .addOnSuccessListener { onSuccess?.invoke() }
+            .addOnFailureListener { onFailure?.invoke() }
     }
 
-    // Função para atualizar a contestação de um pedido
-    fun updateOrderDispute(orderId: String, dispute: String) {
-        database.child(orderId).child("dispute").setValue(dispute)
-            .addOnFailureListener { exception ->
-                exception.printStackTrace()
-            }
-    }
-
-    // Função para limpar o carrinho do usuário
-    fun clearUserCart(userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        val cartDatabase = FirebaseDatabase.getInstance().getReference("cart").child(userId)
-        cartDatabase.removeValue().addOnSuccessListener {
-            onSuccess()
-        }.addOnFailureListener { exception ->
-            onFailure(exception)
-        }
-    }
 }

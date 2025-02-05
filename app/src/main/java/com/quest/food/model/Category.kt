@@ -1,7 +1,6 @@
-package com.quest.food
+package com.quest.food.model
 
 import android.os.Parcelable
-import com.quest.food.model.MenuItem
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

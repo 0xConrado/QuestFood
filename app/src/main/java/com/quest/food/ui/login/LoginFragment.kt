@@ -41,12 +41,15 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Configuração do Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestIdToken(getString(R.string.default_web_client_id)) // Web Client ID do Firebase
             .requestEmail()
             .build()
+
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
 
+        // Botão de login com email e senha
         binding.buttonLogin.setOnClickListener {
             val input = binding.editTextEmail.text.toString().trim()
             val password = binding.editTextPassword.text.toString().trim()
@@ -63,18 +66,19 @@ class LoginFragment : Fragment() {
             }
         }
 
+        // Popup para cadastro
         binding.textViewRegister.setOnClickListener {
             val registerPopup = PopupRegisterFragment()
             registerPopup.show(parentFragmentManager, "RegisterPopup")
         }
 
+        // Botão de login com Google
         binding.buttonLoginGoogle.setOnClickListener {
-            googleSignInClient.signOut().addOnCompleteListener {
-                val signInIntent = googleSignInClient.signInIntent
-                startActivityForResult(signInIntent, 9001)
-            }
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, 9001)  // Solicitar a autenticação do Google
         }
 
+        // Observando o estado de login do usuário
         loginViewModel.user.observe(viewLifecycleOwner) { user ->
             if (user != null) {
                 verificarRoleDoUsuario(user.uid)
@@ -88,6 +92,7 @@ class LoginFragment : Fragment() {
         }
     }
 
+    // Resultado do login com o Google
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -95,13 +100,16 @@ class LoginFragment : Fragment() {
             val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
             if (task.isSuccessful) {
                 val account = task.result
-                firebaseAuthWithGoogle(account.idToken!!)
+                if (account != null) {
+                    firebaseAuthWithGoogle(account.idToken!!)
+                }
             } else {
                 Toast.makeText(requireContext(), "Falha no login com o Google", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    // Função de autenticação do Firebase com Google
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         FirebaseAuth.getInstance().signInWithCredential(credential)
@@ -133,6 +141,7 @@ class LoginFragment : Fragment() {
             }
     }
 
+    // Verificar a role do usuário após login
     private fun verificarRoleDoUsuario(userId: String) {
         val database = FirebaseDatabase.getInstance().getReference("users").child(userId)
 

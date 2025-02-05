@@ -14,7 +14,9 @@ object UserManager {
      */
     fun addExperience(userId: String, xpGained: Int, onUpdate: (Int, Int, String) -> Unit) {
         ExperienceManager.addExperience(userId, xpGained) { level, progress ->
+            // Após adicionar XP, atualize o título
             TitleManager.updateTitle(userId, level) { newTitle ->
+                // Retorne o novo título juntamente com o nível e o progresso
                 onUpdate(level, progress, newTitle)
             }
         }
@@ -27,3 +29,4 @@ object UserManager {
         return auth.currentUser?.uid
     }
 }
+

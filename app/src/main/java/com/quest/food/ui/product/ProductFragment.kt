@@ -16,6 +16,7 @@ import com.quest.food.databinding.FragmentProductListBinding
 import com.quest.food.model.ProductItem
 import com.quest.food.viewmodel.ProductViewModel
 import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.setFragmentResultListener
 import com.quest.food.ui.product.ProductFragmentDirections
 
 class ProductFragment : Fragment() {
@@ -38,13 +39,31 @@ class ProductFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         categoryId = arguments?.getString("categoryId") ?: ""
-        productViewModel.loadProductsForCategory(categoryId)
-        productViewModel.loadCategoryDetails(categoryId)
 
         setupProductAdapter()
 
+        // ✅ Listener para recarregar produtos após fechar o diálogo
+        setFragmentResultListener("refreshProducts") { _, _ ->
+            productViewModel.loadProductsForCategory(categoryId)
+        }
+
+        loadCategoryData()
+
+        binding.searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                adapter.filterProducts(s.toString())
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun loadCategoryData() {
+        productViewModel.loadCategoryDetails(categoryId)
+        productViewModel.loadProductsForCategory(categoryId)
+
         productViewModel.products.observe(viewLifecycleOwner) { products ->
-            adapter.updateProducts(products)
+            adapter.updateProducts(products.filter { it.categoryId == categoryId })
         }
 
         productViewModel.category.observe(viewLifecycleOwner) { category ->
@@ -60,14 +79,6 @@ class ProductFragment : Fragment() {
             binding.addProductButton.visibility = if (isAdmin) View.VISIBLE else View.GONE
             binding.addProductButton.setOnClickListener { showAddProductDialog(categoryId) }
         }
-
-        binding.searchBar.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                adapter.filterProducts(s.toString())
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        })
     }
 
     private fun setupProductAdapter() {
@@ -101,13 +112,13 @@ class ProductFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-
     private fun confirmDeleteProduct(product: ProductItem) {
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setTitle("Excluir Produto")
             .setMessage("Tem certeza que deseja excluir ${product.name}?")
             .setPositiveButton("SIM") { _, _ ->
                 productViewModel.deleteProduct(categoryId, product)
+                productViewModel.loadProductsForCategory(categoryId) // ✅ Atualiza a lista após exclusão
             }
             .setNegativeButton("CANCELAR", null)
             .show()

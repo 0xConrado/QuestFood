@@ -1,42 +1,34 @@
 {
   "project_info": {
-    "project_number": "107784783985",
-    "firebase_url": "https://quest-food-a9280-default-rtdb.firebaseio.com",
-    "project_id": "quest-food-a9280",
-    "storage_bucket": "quest-food-a9280.firebasestorage.app"
+    "project_number": "784322883731",
+    "firebase_url": "https://quest-food-5bdf5-default-rtdb.firebaseio.com",
+    "project_id": "quest-food-5bdf5",
+    "storage_bucket": "quest-food-5bdf5.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:107784783985:android:a165b73a68ed73ca4bb3d0",
+        "mobilesdk_app_id": "1:784322883731:android:ce0e3641e27faba4a61d66",
         "android_client_info": {
           "package_name": "com.quest.food"
         }
       },
       "oauth_client": [
         {
-          "client_id": "107784783985-14vhgkss0tgvrunnl1acu8uqii0osvqo.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.quest.food",
-            "certificate_hash": "27e2b513ae41fe80bbb408197ffd9d95eaf7db4a"
-          }
-        },
-        {
-          "client_id": "107784783985-8vchan6ik13bns3lvo19ot94d2t6dr7u.apps.googleusercontent.com",
+          "client_id": "784322883731-fd7ceajlu2o1jf5eb892il88fq3613bg.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBNugQnS8mVaMKvAPN6hZ2Rwke66rDSyZo"
+          "current_key": "AIzaSyA4Jzol5JDEKGdEaSfY2Hqj6ED8iBoqX44"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "107784783985-8vchan6ik13bns3lvo19ot94d2t6dr7u.apps.googleusercontent.com",
+              "client_id": "784322883731-fd7ceajlu2o1jf5eb892il88fq3613bg.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

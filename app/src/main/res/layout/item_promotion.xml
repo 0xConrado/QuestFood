@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@drawable/promotion_background"
+    android:padding="8dp"
+    android:gravity="center_vertical">
+
+    <!-- Seção de Texto -->
+    <LinearLayout
+    android:layout_width="1dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:orientation="vertical">
+
+    <!-- Título da Promoção -->
+    <TextView
+    android:id="@+id/bannerTitle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Get your special\nsale up to 50%"
+    android:textColor="#000000"
+    android:textSize="18sp"
+    android:textStyle="bold" />
+
+    <!-- Subtítulo da Promoção -->
+    <TextView
+    android:id="@+id/bannerSubtitle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:text="ingredientes"
+    android:textColor="@color/black"
+    android:textSize="14sp" />
+
+        <!-- Subtítulo da Promoção -->
+        <TextView
+            android:id="@+id/promotionSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/promotion"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+    <!-- Botão de Comprar Agora -->
+    <Button
+    android:id="@+id/shopNowButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:backgroundTint="@color/red"
+    android:text="COMPRAR AGORA!"
+    android:textColor="#FFFFFF"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp" />
+    </LinearLayout>
+
+    <!-- Imagem da Promoção -->
+    <ImageView
+    android:id="@+id/bannerImage"
+    android:layout_width="180dp"
+    android:layout_height="match_parent"
+    android:src="@drawable/placeholder_image"
+    android:scaleType="fitCenter" />
+    </LinearLayout>

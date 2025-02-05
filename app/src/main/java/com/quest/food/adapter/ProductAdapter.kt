@@ -116,4 +116,10 @@ class ProductAdapter(
         products.addAll(filteredList)
         notifyDataSetChanged()
     }
+
+    fun clearProducts() {
+        products.clear()
+        notifyDataSetChanged()
+    }
+
 }
