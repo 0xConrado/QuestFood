@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.database.*
 import com.quest.food.model.ProductItem
 import com.quest.food.model.Category
+import com.quest.food.model.FoodMenuItem
 
 class ProductViewModel : ViewModel() {
 
@@ -170,6 +171,29 @@ class ProductViewModel : ViewModel() {
                 })
         }
     }
+
+    fun getProductsByCategoryIds(categoryIds: List<String>, callback: (List<FoodMenuItem>) -> Unit) {
+        val productList = mutableListOf<FoodMenuItem>()
+
+        categoryIds.forEach { categoryId ->
+            database.child(categoryId).child("products").addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (productSnapshot in snapshot.children) {
+                        val product = productSnapshot.getValue(FoodMenuItem::class.java)
+                        product?.let {
+                            productList.add(it)
+                        }
+                    }
+                    callback(productList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    callback(emptyList())
+                }
+            })
+        }
+    }
+
 
     fun filterProducts(query: String) {
         if (query.isEmpty()) {

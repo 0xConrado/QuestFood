@@ -12,12 +12,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.FirebaseDatabase
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
+import com.google.firebase.database.FirebaseDatabase
 import com.quest.food.R
 import com.quest.food.databinding.FragmentLoginBinding
 import com.quest.food.ui.popup.PopupRegisterFragment
@@ -40,6 +40,10 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Esconde o BottomNavigationView na tela de login
+        val bottomNavigationView = requireActivity().findViewById<View>(R.id.bottomNavigationView)
+        bottomNavigationView?.visibility = View.GONE
 
         // Configuração do Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -148,8 +152,14 @@ class LoginFragment : Fragment() {
         database.get().addOnSuccessListener { snapshot ->
             val role = snapshot.child("role").getValue(String::class.java) ?: "user"
 
+            // Utilizando a variável role
+            if (role == "admin") {
+                // Exemplo: se for admin, faça algo específico
+                Toast.makeText(requireContext(), "Usuário Administrador", Toast.LENGTH_SHORT).show()
+            }
+
             val bottomNavigationView = requireActivity().findViewById<View>(R.id.bottomNavigationView)
-            bottomNavigationView?.visibility = View.VISIBLE
+            bottomNavigationView?.visibility = View.VISIBLE  // Exibe a barra de navegação após o login
 
             Toast.makeText(requireContext(), "Login bem-sucedido!", Toast.LENGTH_SHORT).show()
             findNavController().navigate(R.id.action_loginFragment_to_homeFragment)

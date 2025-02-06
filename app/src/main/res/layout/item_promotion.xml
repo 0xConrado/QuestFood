@@ -18,20 +18,24 @@
     android:id="@+id/bannerTitle"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Get your special\nsale up to 50%"
+    android:text="Item"
     android:textColor="#000000"
-    android:textSize="18sp"
+    android:textSize="24sp"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
     android:textStyle="bold" />
 
     <!-- Subtítulo da Promoção -->
     <TextView
-    android:id="@+id/bannerSubtitle"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:text="ingredientes"
-    android:textColor="@color/black"
-    android:textSize="14sp" />
+        android:id="@+id/bannerSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:paddingLeft="10dp"
+        android:text="ingredientes"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
 
         <!-- Subtítulo da Promoção -->
         <TextView
@@ -39,29 +43,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:paddingLeft="12dp"
             android:text="@string/promotion"
             android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:textSize="10sp" />
 
     <!-- Botão de Comprar Agora -->
     <Button
-    android:id="@+id/shopNowButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:backgroundTint="@color/red"
-    android:text="COMPRAR AGORA!"
-    android:textColor="#FFFFFF"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp" />
+        android:id="@+id/shopNowButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/red"
+        android:textSize="18dp"
+        android:text="COMPRAR AGORA!"
+        android:textColor="#FFFFFF"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" />
     </LinearLayout>
 
     <!-- Imagem da Promoção -->
     <ImageView
     android:id="@+id/bannerImage"
-    android:layout_width="180dp"
+    android:layout_width="200dp"
     android:layout_height="match_parent"
     android:src="@drawable/placeholder_image"
     android:scaleType="fitCenter" />

@@ -81,7 +81,7 @@
     <fragment
         android:id="@+id/popupQuestFragment"
         android:name="com.quest.food.ui.popup.PopupQuestFragment"
-        android:label="popup_quest" />
+        android:label="Missões" />
 
 
 

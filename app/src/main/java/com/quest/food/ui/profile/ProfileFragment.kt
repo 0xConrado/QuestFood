@@ -19,11 +19,16 @@ import com.quest.food.ui.popup.PopupRegisterFragment
 import com.quest.food.user.UserManager
 import com.bumptech.glide.Glide
 import com.quest.food.model.User
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var googleSignInClient: GoogleSignInClient  // Definição do GoogleSignInClient
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +40,14 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Configuração do Google Sign-In
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id)) // Web Client ID do Firebase
+            .requestEmail()
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId == null) {
@@ -49,6 +62,11 @@ class ProfileFragment : Fragment() {
             ProfileMenuItem("Logout", R.drawable.shutdown)
         )
 
+        // Adiciona o item do Dashboard apenas para usuários admin
+        if (it.role == "admin") {
+            menuItems.add(0, ProfileMenuItem("Dashboard", R.drawable.kanban_board))
+        }
+
         val adapter = ProfileMenuAdapter(menuItems) { item ->
             handleMenuItemClick(item.title, userId)
         }
@@ -62,6 +80,38 @@ class ProfileFragment : Fragment() {
         // Lógica para o botão de ganhar XP
         binding.buttonGainXp.setOnClickListener {
             gainExperience(userId)
+        }
+    }
+
+    private fun handleMenuItemClick(title: String, userId: String) {
+        when (title) {
+            "Dashboard" -> {
+                findNavController().navigate(R.id.dashboardFragment)
+            }
+            "Editar Informações" -> {
+                val popupRegister = PopupRegisterFragment(userId)
+                popupRegister.show(parentFragmentManager, "PopupRegisterFragment")
+            }
+            "Editar Endereço" -> {
+                val popupAddress = PopupAddressFragment(userId)
+                popupAddress.show(parentFragmentManager, "PopupAddressFragment")
+            }
+            "Histórico de Pedidos" -> {
+                findNavController().navigate(R.id.orderHistoryFragment)
+            }
+            "Logout" -> {
+                // Logout do Firebase
+                FirebaseAuth.getInstance().signOut()
+
+                // Logout do Google SignIn
+                googleSignInClient.signOut().addOnCompleteListener {
+                    // Redireciona para a tela de login
+                    findNavController().navigate(R.id.loginFragment)
+                }
+            }
+            else -> {
+                Toast.makeText(requireContext(), "Clicou em: $title", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -122,29 +172,6 @@ class ProfileFragment : Fragment() {
 
             // Mostra uma mensagem de sucesso
             Toast.makeText(requireContext(), "+$xpGained XP! Agora você é Lvl $level", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun handleMenuItemClick(title: String, userId: String) {
-        when (title) {
-            "Editar Informações" -> {
-                val popupRegister = PopupRegisterFragment(userId)
-                popupRegister.show(parentFragmentManager, "PopupRegisterFragment")
-            }
-            "Editar Endereço" -> {
-                val popupAddress = PopupAddressFragment(userId)
-                popupAddress.show(parentFragmentManager, "PopupAddressFragment")
-            }
-            "Histórico de Pedidos" -> {
-                findNavController().navigate(R.id.orderHistoryFragment)
-            }
-            "Logout" -> {
-                FirebaseAuth.getInstance().signOut()
-                findNavController().navigate(R.id.loginFragment)
-            }
-            else -> {
-                Toast.makeText(requireContext(), "Clicou em: $title", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 

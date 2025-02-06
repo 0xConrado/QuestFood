@@ -18,8 +18,12 @@ data class CategoryMenuItem(
     var id: String = "",
     var title: String = "",
     var subtitle: String = "",
-    var imageUrl: String = ""
-) : MenuItem(MenuType.CATEGORY)
+    var imageUrl: String = "",
+    var items: Map<String, MenuItem> = emptyMap() // Armazena os itens da categoria
+) : MenuItem(MenuType.CATEGORY) {
+    // Construtor sem argumentos para o Firebase
+    constructor() : this("", "", "", "", emptyMap())
+}
 
 // Modelo para itens do menu (Ex: Coca-Cola, X-Burger)
 @Parcelize
@@ -32,9 +36,12 @@ data class FoodMenuItem(
     var imageUrl: String = "",
     var isPromo: Boolean = false,
     var isBestSeller: Boolean = false
-) : MenuItem(MenuType.ITEM)
+) : MenuItem(MenuType.ITEM) {
+    constructor() : this("", "", "", 0.0, 0.0, "", false, false)
+}
 
 // Classe de modelo para representar os itens do menu do perfil
+@Parcelize
 data class ProfileMenuItem(
     val title: String,       // Título do item do menu (ex: "Histórico de Pedidos")
     val iconRes: Int         // ID do recurso do ícone associado ao item
