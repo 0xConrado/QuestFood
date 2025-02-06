@@ -66,7 +66,7 @@ class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : D
                     val order = Order(
                         id = orderId,
                         userId = userId,
-                        userName = user.username, // Incluído o nome do usuário
+                        userName = user.username,
                         items = cartItems,
                         total = finalTotal,
                         status = "Aguardando Aprovação",
@@ -77,22 +77,20 @@ class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : D
                     )
 
                     saveOrderToFirebase(order) {
-                        orderViewModel.clearUserCart(userId, {
-                            requireContext().safeToast("Carrinho limpo com sucesso!")
+                        orderViewModel.clearUserCart(userId, onSuccess = {
+                            showToast("Carrinho limpo com sucesso!")
                             cartViewModel.loadCartItems()
 
-                            // ✅ Chama o callback para informar o CartFragment
                             onCartCleared?.invoke()
-                            // ✅ Envia a mensagem para o WhatsApp após limpar o carrinho
                             sendOrderViaWhatsApp(paymentMethod, deliveryOption, observation, cartItems, user, orderId)
-                            dismiss() // Fecha o Popup
-                        }, {
-                            requireContext().safeToast("Erro ao limpar o carrinho!")
+                            dismiss()
+                        }, onFailure = {
+                            showToast("Erro ao limpar o carrinho!")
                         })
                     }
                 }
             } ?: run {
-                requireContext().safeToast("Falha ao carregar dados do usuário.")
+                showToast("Falha ao carregar dados do usuário.")
             }
         }
     }
@@ -106,7 +104,6 @@ class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : D
         orderId: String
     ) {
         val address = user.address
-
         val phoneNumber = "+5537999611408"
         val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         val currentTime = dateFormat.format(Date())
@@ -118,16 +115,13 @@ class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : D
         val totalPrice = cartItems.sumOf { it.price * it.quantity }
         val deliveryFee = if (deliveryOption == "Delivery") 5.00 else 0.0
         val finalTotal = totalPrice + deliveryFee
-
         val orderLink = "https://questfood.app/pedido/$orderId"
 
         val message = """
         🛒 *Pedido Quest Food* ($currentTime)
         📦 *Número do Pedido:* $orderId
         ⏰ *Estimativa:* 30 - 50 minutos
-
         🔗 *Acompanhe o pedido:* $orderLink
-
         🚚 *Tipo de Entrega:* $deliveryOption
         🙍 *Nome:* ${user.username}
         📱 *Telefone:* ${user.phone}
@@ -135,7 +129,6 @@ class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : D
         📍 *Bairro:* ${address.neighborhood}
         🗺️ *Complemento:* ${address.complement}
         📮 *CEP:* ${address.postalCode}
-
         🍽️ *Itens do Pedido:*
         --------------------------------------------------------------------------
         $items
@@ -143,7 +136,6 @@ class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : D
         💰 *Subtotal:* R$${"%.2f".format(totalPrice)}
         🚚 *Taxa de Entrega:* R$${"%.2f".format(deliveryFee)}
         💵 *TOTAL:* *R$${"%.2f".format(finalTotal)}*
-
         💳 *Forma de Pagamento:* $paymentMethod
         📝 *Observação:* ${if (observation.isNotEmpty()) observation else "Nenhuma"}
     """.trimIndent()
@@ -155,20 +147,18 @@ class PopupCheckoutFragment(private val onCartCleared: (() -> Unit)? = null) : D
         startActivity(intent)
     }
 
-
-
     private fun saveOrderToFirebase(order: Order, onSuccess: () -> Unit) {
         val database = FirebaseDatabase.getInstance().getReference("orders")
         database.child(order.id).setValue(order).addOnSuccessListener {
-            requireContext().safeToast("Pedido enviado com sucesso!")
+            showToast("Pedido enviado com sucesso!")
             onSuccess()
         }.addOnFailureListener {
-            requireContext().safeToast("Erro ao salvar o pedido!")
+            showToast("Erro ao salvar o pedido!")
         }
     }
 
-    private fun Context.safeToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {

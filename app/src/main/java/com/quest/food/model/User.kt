@@ -27,5 +27,6 @@ data class User(
         val levelProgress: Int = 0,
         val profileImagePath: String = "",
         val role: String = "user",
-        val address: Address = Address()  // ✅ Adicionado o campo address
+        val address: Address = Address(),
+        val completedQuests: List<String> = emptyList() // ✅ Registro de missões concluídas
 ) : Serializable

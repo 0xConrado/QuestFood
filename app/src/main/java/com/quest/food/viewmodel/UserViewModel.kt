@@ -10,7 +10,7 @@ import com.quest.food.model.User
 class UserViewModel : ViewModel() {
 
     private val database = FirebaseDatabase.getInstance().getReference("users")
-    private val auth = FirebaseAuth.getInstance()
+    val auth = FirebaseAuth.getInstance()
 
     private val _allUsers = MutableLiveData<List<User>>()
     val allUsers: LiveData<List<User>> get() = _allUsers
@@ -18,6 +18,11 @@ class UserViewModel : ViewModel() {
     private val _userData = MutableLiveData<User?>()
     val userData: LiveData<User?> get() = _userData
 
+    fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid
+    }
+
+    // ✅ Carrega todos os usuários (para Admins)
     fun loadAllUsers() {
         database.get().addOnSuccessListener { snapshot ->
             val users = snapshot.children.mapNotNull { it.getValue(User::class.java) }
@@ -25,6 +30,7 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    // ✅ Obtém dados de um usuário específico por ID
     fun getUserById(userId: String, callback: (User?) -> Unit) {
         database.child(userId).get().addOnSuccessListener { snapshot ->
             val user = snapshot.getValue(User::class.java)
@@ -34,8 +40,9 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    // ✅ Carrega os dados do usuário logado
     fun loadUserData() {
-        val userId = auth.currentUser?.uid ?: return
+        val userId = getCurrentUserId() ?: return
         database.child(userId).get().addOnSuccessListener { snapshot ->
             val user = snapshot.getValue(User::class.java)
             _userData.value = user
@@ -43,4 +50,22 @@ class UserViewModel : ViewModel() {
             _userData.value = null
         }
     }
+
+    // ✅ Adiciona experiência ao usuário quando ele completa uma missão
+    fun addExperience(userId: String, exp: Int, onComplete: (() -> Unit)? = null) {
+        val userRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
+
+        userRef.get().addOnSuccessListener { snapshot ->
+            val user = snapshot.getValue(User::class.java)
+            user?.let {
+                val updatedExp = it.levelProgress + exp
+                userRef.child("levelProgress").setValue(updatedExp)
+                    .addOnSuccessListener {
+                        println("✅ XP atualizado para: $updatedExp")
+                        onComplete?.invoke()
+                    }
+            }
+        }
+    }
+
 }

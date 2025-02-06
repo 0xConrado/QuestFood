@@ -57,7 +57,7 @@ class CartFragment : Fragment() {
                     if (user != null) {
                         val popupCheckout = PopupCheckoutFragment(onCartCleared = { reloadCart() }).apply {
                             arguments = Bundle().apply {
-                                putParcelableArrayList("cartItems", ArrayList(cartItems))
+                                putParcelableArrayList("cartItems", ArrayList(cartItems.map { it }))
                                 putSerializable("userData", user)
                             }
                         }
@@ -70,6 +70,7 @@ class CartFragment : Fragment() {
                 Toast.makeText(requireContext(), "Seu carrinho está vazio!", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 
     private fun updateCartVisibility(items: List<CartItem>) {

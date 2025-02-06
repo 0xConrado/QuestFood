@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="100dp"
     android:orientation="horizontal"
     android:padding="8dp"
-    android:background="@drawable/banner_background"
+    android:background="@drawable/divisor_line"
     android:gravity="center_vertical"
     android:layout_marginBottom="8dp">
 
     <ImageView
         android:id="@+id/questIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:src="@drawable/placeholder_image"
         android:layout_marginEnd="8dp"
         android:contentDescription="Quest Icon" />
@@ -28,14 +28,14 @@
             android:layout_height="wrap_content"
             android:text="Nome da Missão"
             android:textStyle="bold"
-            android:textSize="16sp"
+            android:textSize="24sp"
             android:textColor="@android:color/black"
             android:layout_gravity="center_horizontal" />
 
         <ProgressBar
             android:id="@+id/questProgress"
             android:layout_width="match_parent"
-            android:layout_height="16dp"
+            android:layout_height="20dp"
             android:progress="0"
             android:max="100"
             style="@android:style/Widget.ProgressBar.Horizontal"
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:text="0/10 Tarefas concluídas"
             android:textColor="@android:color/darker_gray"
-            android:textSize="12sp"
+            android:textSize="18sp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="2dp" />
 
@@ -55,10 +55,9 @@
 
     <ImageView
         android:id="@+id/questStatusIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/gift_box"
-        android:layout_marginStart="8dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/giftbox"
         android:contentDescription="Quest Status Icon" />
 
 </LinearLayout>

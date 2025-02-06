@@ -11,8 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.quest.food.R
 import com.quest.food.adapter.QuestAdapter
+import com.quest.food.model.Quest
+import com.quest.food.ui.popup.PopupQuestFragment
+import com.quest.food.ui.popup.RewardPopupFragment
 import com.quest.food.viewmodel.QuestViewModel
-import com.quest.food.ui.popup.PopupQuestFragment  // ✅ Importação corrigida
 
 class QuestFragment : Fragment() {
 
@@ -24,27 +26,53 @@ class QuestFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val binding = inflater.inflate(R.layout.fragment_quest, container, false)
+    ): View {
+        val view = inflater.inflate(R.layout.fragment_quest, container, false)
 
-        recyclerView = binding.findViewById(R.id.recyclerViewQuests)
-        createQuestButton = binding.findViewById(R.id.createQuestButton)
+        recyclerView = view.findViewById(R.id.recyclerViewQuests)
+        createQuestButton = view.findViewById(R.id.createQuestButton)
 
         questViewModel = ViewModelProvider(this).get(QuestViewModel::class.java)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
-        questAdapter = QuestAdapter()
+
+        // ✅ Ajustado para atualizar o progresso corretamente e abrir o RewardPopupFragment quando necessário
+        questAdapter = QuestAdapter(
+            emptyList(),
+            onQuestProgressUpdate = { questId, progress ->
+                questViewModel.updateQuestProgress(questId, progress)
+            },
+            onQuestCompleted = { quest ->
+                showRewardPopup(quest)
+            }
+        )
+
         recyclerView.adapter = questAdapter
 
         questViewModel.quests.observe(viewLifecycleOwner) { quests ->
-            questAdapter.submitList(quests)
+            questAdapter.updateQuests(quests)
         }
 
         createQuestButton.setOnClickListener {
-            val popupQuestFragment = PopupQuestFragment()  // ✅ Nome corrigido
+            val popupQuestFragment = PopupQuestFragment()
             popupQuestFragment.show(childFragmentManager, "popupQuest")
         }
 
-        return binding
+        return view
+    }
+
+    private fun showRewardPopup(quest: Quest) {
+        if (!isAdded || quest.id.isEmpty()) {
+            return
+        }
+
+        val popup = RewardPopupFragment.newInstance(
+            questId = quest.id, // ✅ Agora passamos corretamente o questId
+            rewardProductId = quest.rewardProductId,
+            rewardQuantity = quest.rewardQuantity,
+            expGain = quest.exp,
+            rewardImageUrl = quest.rewardImageUrl
+        )
+        popup.show(childFragmentManager, "rewardPopup")
     }
 }

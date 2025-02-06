@@ -35,16 +35,20 @@ class ManageOrdersFragment : Fragment() {
         binding.recyclerViewManageOrders.layoutManager = LinearLayoutManager(requireContext())
 
         adapter = ManageOrdersAdapter(
-            emptyList(),
+            mutableListOf(),
             onStatusChange = { order, newStatus ->
                 orderViewModel.updateOrderStatus(order.id, newStatus)
+
+                // ✅ Se o status for "Concluído", chamar completeOrder()
+                if (newStatus == "Concluído") {
+                    orderViewModel.completeOrder(order.id)
+                }
+
                 showToast("Status atualizado para: $newStatus")
                 orderViewModel.loadAllOrders()
             },
             onDeleteOrder = { order ->
-                orderViewModel.deleteOrder(order.id)
-                showToast("Pedido excluído com sucesso!")
-                orderViewModel.loadAllOrders()
+                showDeleteConfirmationDialog(order.id)
             },
             onExpandToggle = { position ->
                 adapter.notifyItemChanged(position)
@@ -54,11 +58,8 @@ class ManageOrdersFragment : Fragment() {
         binding.recyclerViewManageOrders.adapter = adapter
 
         orderViewModel.allOrders.observe(viewLifecycleOwner) { orders ->
-            if (orders.isNotEmpty()) {
-                adapter.updateOrders(orders)
-            } else {
-                showToast("Nenhum pedido disponível.")
-            }
+            adapter.updateOrders(orders.toMutableList())
+            binding.recyclerViewManageOrders.adapter?.notifyDataSetChanged()
         }
 
         binding.searchBar.addTextChangedListener(object : TextWatcher {
@@ -73,6 +74,19 @@ class ManageOrdersFragment : Fragment() {
         })
 
         orderViewModel.loadAllOrders()
+    }
+
+    private fun showDeleteConfirmationDialog(orderId: String) {
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Confirmar Exclusão")
+            .setMessage("Tem certeza que deseja excluir este pedido?")
+            .setPositiveButton("Sim") { _, _ ->
+                orderViewModel.deleteOrder(orderId)
+                showToast("Pedido excluído com sucesso!")
+                orderViewModel.loadAllOrders()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     private fun showToast(message: String) {

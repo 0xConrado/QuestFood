@@ -1,8 +1,6 @@
 package com.quest.food.ui.product
 
-import android.content.Intent
 import android.graphics.Paint
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +14,6 @@ import com.quest.food.R
 import com.quest.food.model.CartItem
 import com.quest.food.viewmodel.CartViewModel
 import com.quest.food.viewmodel.ProductViewModel
-import java.util.*
 
 class ProductDetailFragment : Fragment() {
 
@@ -26,7 +23,7 @@ class ProductDetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
@@ -47,6 +44,7 @@ class ProductDetailFragment : Fragment() {
         cartBadge.text = "0"
         productOldPrice.paintFlags = productOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
+        // Carregar detalhes do produto
         productViewModel.getProductById(categoryId, productId)
 
         productViewModel.selectedProduct.observe(viewLifecycleOwner) { product ->
@@ -66,6 +64,7 @@ class ProductDetailFragment : Fragment() {
                     .placeholder(R.drawable.placeholder_image)
                     .into(productImage)
 
+                // Limpar e adicionar ingredientes dinamicamente
                 ingredientsContainer.removeAllViews()
                 it.ingredients.forEach { ingredient ->
                     val ingredientView = layoutInflater.inflate(R.layout.ingredient_item, ingredientsContainer, false)
@@ -90,14 +89,15 @@ class ProductDetailFragment : Fragment() {
                         }
                     }
 
+                    // Obter nome da categoria e adicionar ao carrinho
                     getCategoryName(categoryId) { categoryName ->
                         val cartItem = CartItem(
-                            id = "",
+                            id = FirebaseDatabase.getInstance().getReference("cart").push().key ?: "", // Garante um ID único
                             productId = product.id,
                             productName = product.name,
                             categoryName = categoryName,
                             price = product.price,
-                            quantity = 1,
+                            quantity = 1.0, // Certifica que é Double
                             selectedIngredients = selectedIngredients,
                             timestamp = System.currentTimeMillis(),
                             categoryId = categoryId
@@ -105,7 +105,7 @@ class ProductDetailFragment : Fragment() {
 
                         cartViewModel.addToCart(cartItem)
 
-                        val currentCount = cartBadge.text.toString().toInt()
+                        val currentCount = cartBadge.text.toString().toIntOrNull() ?: 0
                         cartBadge.text = (currentCount + 1).toString()
                         cartBadge.visibility = View.VISIBLE
 
