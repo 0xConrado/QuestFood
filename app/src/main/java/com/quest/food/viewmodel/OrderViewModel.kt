@@ -84,6 +84,23 @@ class OrderViewModel : ViewModel() {
             }
     }
 
+    fun filterOrders(query: String) {
+        val currentOrders = _allOrders.value ?: emptyList() // Garante uma lista não nula
+
+        val filteredOrders = if (query.isEmpty()) {
+            currentOrders // Mostra todos os pedidos se a busca estiver vazia
+        } else {
+            currentOrders.filter { order ->
+                order.id.contains(query, ignoreCase = true) ||
+                        order.status.contains(query, ignoreCase = true)
+            }
+        }
+
+        _allOrders.value = filteredOrders
+    }
+
+
+
     // Limpa o carrinho do usuário após o checkout
     fun clearUserCart(
         userId: String,

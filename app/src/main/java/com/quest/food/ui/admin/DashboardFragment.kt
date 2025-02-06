@@ -26,16 +26,16 @@ class DashboardFragment : Fragment() {
             findNavController().navigate(R.id.manageOrdersFragment)
         }
 
-        view.findViewById<Button>(R.id.manageUsersButton).setOnClickListener {
-            findNavController().navigate(R.id.manageUsersFragment)
-        }
+//        view.findViewById<Button>(R.id.manageUsersButton).setOnClickListener {
+//            findNavController().navigate(R.id.manageUsersFragment)
+//        }
 
-        view.findViewById<Button>(R.id.managePromosButton).setOnClickListener {
-            findNavController().navigate(R.id.managePromosFragment)
-        }
+//        view.findViewById<Button>(R.id.managePromosButton).setOnClickListener {
+//            findNavController().navigate(R.id.managePromosFragment)
+//        }
 
-        view.findViewById<Button>(R.id.manageQuestsButton).setOnClickListener {
-            findNavController().navigate(R.id.manageQuestsFragment)
-        }
+//        view.findViewById<Button>(R.id.manageQuestsButton).setOnClickListener {
+//            findNavController().navigate(R.id.manageQuestsFragment)
+//        }
     }
 }

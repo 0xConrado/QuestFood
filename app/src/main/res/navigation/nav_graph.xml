@@ -72,7 +72,7 @@
     <fragment
         android:id="@+id/questFragment"
         android:name="com.quest.food.ui.quest.QuestFragment"
-        android:label="fragment_quest">
+        android:label="Missões">
         <action
             android:id="@+id/action_questFragment_to_popupQuestFragment"
             app:destination="@id/popupQuestFragment" />
@@ -157,5 +157,12 @@
         android:name="com.quest.food.ui.order.ManageOrdersFragment"
         android:label="Gerenciar Pedidos"
         tools:layout="@layout/fragment_manage_orders" />
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.quest.food.ui.admin.DashboardFragment"
+        android:label="Dashboard"
+        tools:layout="@layout/fragment_dashboard" />
+
 
 </navigation>

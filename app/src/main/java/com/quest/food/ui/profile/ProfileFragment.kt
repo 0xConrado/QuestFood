@@ -41,9 +41,8 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Configuração do Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id)) // Web Client ID do Firebase
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
@@ -55,29 +54,34 @@ class ProfileFragment : Fragment() {
             return
         }
 
-        val menuItems = listOf(
+        val menuItems = mutableListOf(
             ProfileMenuItem("Editar Informações", R.drawable.ic_id),
             ProfileMenuItem("Editar Endereço", R.drawable.ic_street),
             ProfileMenuItem("Histórico de Pedidos", R.drawable.page),
             ProfileMenuItem("Logout", R.drawable.shutdown)
         )
 
-        // Adiciona o item do Dashboard apenas para usuários admin
-        if (it.role == "admin") {
-            menuItems.add(0, ProfileMenuItem("Dashboard", R.drawable.kanban_board))
+        // Carregar as informações do usuário e verificar a role
+        val userRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
+        userRef.get().addOnSuccessListener { snapshot ->
+            val user = snapshot.getValue(User::class.java)
+            user?.let {
+                if (it.role == "admin") {
+                    menuItems.add(0, ProfileMenuItem("Dashboard", R.drawable.kanban_board))
+                }
+
+                val adapter = ProfileMenuAdapter(menuItems) { item ->
+                    handleMenuItemClick(item.title, userId)
+                }
+
+                binding.profileMenuRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                binding.profileMenuRecyclerView.adapter = adapter
+
+                // Atualizar as informações do usuário no layout
+                loadUserProfile(userId)
+            }
         }
 
-        val adapter = ProfileMenuAdapter(menuItems) { item ->
-            handleMenuItemClick(item.title, userId)
-        }
-
-        binding.profileMenuRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.profileMenuRecyclerView.adapter = adapter
-
-        // Carregar as informações do usuário
-        loadUserProfile(userId)
-
-        // Lógica para o botão de ganhar XP
         binding.buttonGainXp.setOnClickListener {
             gainExperience(userId)
         }

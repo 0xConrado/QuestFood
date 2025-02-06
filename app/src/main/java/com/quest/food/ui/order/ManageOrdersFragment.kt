@@ -1,6 +1,8 @@
 package com.quest.food.ui.order
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +19,7 @@ class ManageOrdersFragment : Fragment() {
     private var _binding: FragmentManageOrdersBinding? = null
     private val binding get() = _binding!!
     private val orderViewModel: OrderViewModel by viewModels()
+    private lateinit var adapter: ManageOrdersAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,31 +32,46 @@ class ManageOrdersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Configuração do RecyclerView
         binding.recyclerViewManageOrders.layoutManager = LinearLayoutManager(requireContext())
 
-        // Observa alterações na lista de pedidos
+        adapter = ManageOrdersAdapter(
+            emptyList(),
+            onStatusChange = { order, newStatus ->
+                orderViewModel.updateOrderStatus(order.id, newStatus)
+                showToast("Status atualizado para: $newStatus")
+                orderViewModel.loadAllOrders()
+            },
+            onDeleteOrder = { order ->
+                orderViewModel.deleteOrder(order.id)
+                showToast("Pedido excluído com sucesso!")
+                orderViewModel.loadAllOrders()
+            },
+            onExpandToggle = { position ->
+                adapter.notifyItemChanged(position)
+            }
+        )
+
+        binding.recyclerViewManageOrders.adapter = adapter
+
         orderViewModel.allOrders.observe(viewLifecycleOwner) { orders ->
             if (orders.isNotEmpty()) {
-                binding.recyclerViewManageOrders.adapter = ManageOrdersAdapter(
-                    orders,
-                    onStatusChange = { order, newStatus ->
-                        orderViewModel.updateOrderStatus(order.id, newStatus)
-                        showToast("Status atualizado para: $newStatus")
-                        orderViewModel.loadAllOrders() // Atualiza a lista após mudança de status
-                    },
-                    onDeleteOrder = { order ->
-                        orderViewModel.deleteOrder(order.id)
-                        showToast("Pedido excluído com sucesso!")
-                        orderViewModel.loadAllOrders() // Atualiza a lista após exclusão
-                    }
-                )
+                adapter.updateOrders(orders)
             } else {
                 showToast("Nenhum pedido disponível.")
             }
         }
 
-        // Carrega todos os pedidos
+        binding.searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val query = s.toString().trim()
+                orderViewModel.filterOrders(query)
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         orderViewModel.loadAllOrders()
     }
 

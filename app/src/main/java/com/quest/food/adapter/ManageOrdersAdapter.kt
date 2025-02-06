@@ -4,22 +4,34 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.RadioButton
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.quest.food.R
 import com.quest.food.model.Order
 
 class ManageOrdersAdapter(
-    private val orders: List<Order>,
+    private var orders: List<Order> = emptyList(),
     private val onStatusChange: (Order, String) -> Unit,
-    private val onDeleteOrder: (Order) -> Unit
+    private val onDeleteOrder: (Order) -> Unit,
+    private val onExpandToggle: (Int) -> Unit
 ) : RecyclerView.Adapter<ManageOrdersAdapter.OrderViewHolder>() {
+
+    private val expandedPositionSet = mutableSetOf<Int>()
 
     inner class OrderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val orderId: TextView = itemView.findViewById(R.id.textOrderId)
-        val orderTotal: TextView = itemView.findViewById(R.id.textOrderTotal)
-        val statusGroup: RadioGroup = itemView.findViewById(R.id.statusGroup)
-        val deleteButton: Button = itemView.findViewById(R.id.buttonDelete)
+        val expandIcon: ImageView = itemView.findViewById(R.id.expandIcon)
+        val orderDetailContainer: ViewGroup = itemView.findViewById(R.id.orderDetailContainer)
+        val deleteIcon: ImageView = itemView.findViewById(R.id.deleteIcon)
+
+        val radioApproved: RadioButton = itemView.findViewById(R.id.radioApproved)
+        val radioCancelled: RadioButton = itemView.findViewById(R.id.radioCancelled)
+        val radioInProduction: RadioButton = itemView.findViewById(R.id.radioInProduction)
+        val radioOutForDelivery: RadioButton = itemView.findViewById(R.id.radioOutForDelivery)
+        val radioDelivered: RadioButton = itemView.findViewById(R.id.radioDelivered)
+        val radioCompleted: RadioButton = itemView.findViewById(R.id.radioCompleted)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderViewHolder {
@@ -30,48 +42,64 @@ class ManageOrdersAdapter(
 
     override fun onBindViewHolder(holder: OrderViewHolder, position: Int) {
         val order = orders[position]
-
         holder.orderId.text = "Pedido: ${order.id.takeLast(6)}"
-        holder.orderTotal.text = "Total: R$%.2f".format(order.total)
 
-        // Define o status atual
-        when (order.status) {
-            "Aprovado" -> holder.statusGroup.check(R.id.radioApproved)
-            "Cancelado" -> holder.statusGroup.check(R.id.radioCancelled)
-            "Em Produção" -> holder.statusGroup.check(R.id.radioInProduction)
-            "Saiu para Entregar" -> holder.statusGroup.check(R.id.radioOutForDelivery)
-            "Entregue" -> holder.statusGroup.check(R.id.radioDelivered)
-            "Concluído" -> holder.statusGroup.check(R.id.radioCompleted)
+        val isExpanded = expandedPositionSet.contains(position)
+        holder.orderDetailContainer.visibility = if (isExpanded) View.VISIBLE else View.GONE
+        holder.expandIcon.setImageResource(if (isExpanded) R.drawable.nav_arrow_down else R.drawable.nav_arrow_right)
+
+        holder.expandIcon.setOnClickListener {
+            if (isExpanded) {
+                expandedPositionSet.remove(position)
+            } else {
+                expandedPositionSet.add(position)
+            }
+            notifyItemChanged(position)
+            onExpandToggle(position)
         }
 
-        // Atualização do status apenas quando houver uma mudança
-        holder.statusGroup.setOnCheckedChangeListener { _, checkedId ->
-            val newStatus = when (checkedId) {
-                R.id.radioApproved -> "Aprovado"
-                R.id.radioCancelled -> "Cancelado"
-                R.id.radioInProduction -> "Em Produção"
-                R.id.radioOutForDelivery -> "Saiu para Entregar"
-                R.id.radioDelivered -> "Entregue"
-                R.id.radioCompleted -> "Concluído"
-                else -> order.status
-            }
-            if (newStatus != order.status) {
-                onStatusChange(order, newStatus)
-            }
+        val statusRadioButtons = listOf(
+            holder.radioApproved to "Aprovado",
+            holder.radioCancelled to "Cancelado",
+            holder.radioInProduction to "Em Produção",
+            holder.radioOutForDelivery to "Saiu para Entregar",
+            holder.radioDelivered to "Entregue",
+            holder.radioCompleted to "Concluído"
+        )
+
+        statusRadioButtons.forEach { (radioButton, status) ->
+            radioButton.setOnCheckedChangeListener(null)
+            radioButton.isChecked = order.status == status
         }
 
-        // Confirmação antes de excluir o pedido
-        holder.deleteButton.setOnClickListener {
-            AlertDialog.Builder(holder.itemView.context)
-                .setTitle("Confirmar Exclusão")
-                .setMessage("Tem certeza que deseja excluir o pedido ${order.id.takeLast(6)}?")
-                .setPositiveButton("Sim") { _, _ ->
-                    onDeleteOrder(order)
+        statusRadioButtons.forEach { (radioButton, status) ->
+            radioButton.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked && order.status != status) {
+                    onStatusChange(order, status)
                 }
-                .setNegativeButton("Cancelar", null)
-                .show()
+            }
+        }
+
+        holder.deleteIcon.setOnClickListener {
+            showDeleteConfirmationDialog(holder.itemView, order)
         }
     }
 
     override fun getItemCount(): Int = orders.size
+
+    fun updateOrders(newOrders: List<Order>) {
+        orders = newOrders
+        notifyDataSetChanged()
+    }
+
+    private fun showDeleteConfirmationDialog(view: View, order: Order) {
+        AlertDialog.Builder(view.context)
+            .setTitle("Confirmar Exclusão")
+            .setMessage("Tem certeza que deseja excluir o pedido ${order.id.takeLast(6)}?")
+            .setPositiveButton("Sim") { _, _ ->
+                onDeleteOrder(order)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
 }
