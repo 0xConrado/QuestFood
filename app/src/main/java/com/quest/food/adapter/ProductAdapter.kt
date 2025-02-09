@@ -17,7 +17,7 @@ class ProductAdapter(
     private var isAdmin: Boolean,
     private val onEditProduct: (ProductItem) -> Unit,
     private val onDeleteProduct: (ProductItem) -> Unit,
-    private val onViewProductDetails: (ProductItem) -> Unit // ✅ Novo parâmetro adicionado
+    private val onViewProductDetails: (ProductItem) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     inner class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -61,16 +61,18 @@ class ProductAdapter(
                 paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             }
 
-            if (isAdmin) {
-                adminControls?.visibility = View.VISIBLE
-                buttonEditProduct?.setOnClickListener { onEditProduct(product) }
-                buttonDeleteProduct?.setOnClickListener { onDeleteProduct(product) }
-            } else {
-                adminControls?.visibility = View.GONE
+            // Definindo os listeners para edição e exclusão, independentemente do status de admin
+            buttonEditProduct?.setOnClickListener { onEditProduct(product) }
+            buttonDeleteProduct?.setOnClickListener { onDeleteProduct(product) }
+
+            adminControls?.apply {
+                visibility = if (isAdmin) View.VISIBLE else View.GONE
             }
 
-            // ✅ Atualizado para chamar o novo listener onViewProductDetails
+            // Definindo a ação de clique para visualizar detalhes do produto
             itemView.setOnClickListener { onViewProductDetails(product) }
+
+            // Configurando o botão "Ver mais" para descrições longas
             viewMoreButton?.apply {
                 visibility = if (product.description.length > 50) View.VISIBLE else View.GONE
                 setOnClickListener { onViewProductDetails(product) }
@@ -100,8 +102,8 @@ class ProductAdapter(
     }
 
     fun updateAdminStatus(isAdmin: Boolean) {
-        this.isAdmin = isAdmin
-        notifyDataSetChanged()
+        this.isAdmin = isAdmin  // Atualiza o estado de admin diretamente
+        notifyDataSetChanged()  // Notifica a mudança para todos os itens
     }
 
     fun filterProducts(query: String) {
@@ -121,5 +123,4 @@ class ProductAdapter(
         products.clear()
         notifyDataSetChanged()
     }
-
 }

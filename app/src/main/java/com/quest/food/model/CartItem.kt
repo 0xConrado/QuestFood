@@ -12,7 +12,7 @@ data class CartItem(
     var price: Double = 0.00,
     var selectedIngredients: List<String> = emptyList(),
     var timestamp: Long = System.currentTimeMillis(),
-    var categoryId: String = ""
+    var categoryId: String? = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",

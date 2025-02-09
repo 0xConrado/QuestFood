@@ -4,13 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.google.firebase.database.FirebaseDatabase
@@ -21,11 +17,13 @@ import com.quest.food.model.FoodMenuItem
 import com.quest.food.model.Quest
 import com.quest.food.viewmodel.CategoryViewModel
 import com.quest.food.viewmodel.ProductViewModel
+import com.quest.food.viewmodel.QuestViewModel
 
 class PopupQuestFragment : DialogFragment() {
 
     private var _binding: FragmentPopupQuestBinding? = null
     private val binding get() = _binding!!
+    private val questViewModel: QuestViewModel by activityViewModels()
 
     private val categoryViewModel: CategoryViewModel by viewModels()
     private val productViewModel: ProductViewModel by viewModels()
@@ -69,19 +67,25 @@ class PopupQuestFragment : DialogFragment() {
 
             val finalImageUrl = if (imageUrl.isNotEmpty()) imageUrl else selectedRewardProduct?.imageUrl ?: ""
 
+            // Adicionando o nome das categorias selecionadas
+            val rewardCategoryNames = selectedCategories.joinToString(", ") { it.title }
+
             val quest = Quest(
                 title = title,
                 description = description,
                 quantity = quantity,
                 exp = exp,
                 rewardCategoryId = selectedCategories.joinToString(",") { it.id },
+                rewardCategoryNames = rewardCategoryNames, // Salva o nome das categorias
                 rewardProductId = selectedRewardProduct?.id ?: "",
                 rewardQuantity = rewardQuantity,
-                rewardImageUrl = finalImageUrl
+                rewardImageUrl = finalImageUrl,
+                rewardProductName = selectedRewardProduct?.name ?: "" // Salva o nome do produto de recompensa
             )
 
             saveQuest(quest)
         }
+
 
         binding.imageUrlEditText.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
@@ -192,7 +196,7 @@ class PopupQuestFragment : DialogFragment() {
         val categoryNames = selectedCategories.joinToString(", ") { it.title }
         val productName = selectedRewardProduct?.name ?: "Produto"
         val quantity = binding.quantityEditText.text.toString()
-        val rewardQuantity = binding.rewardQuantityEditText.text.toString().ifEmpty { "1" } // Padrão 1 se vazio
+        val rewardQuantity = binding.rewardQuantityEditText.text.toString().ifEmpty { "1" }
 
         binding.descriptionTextView.text = "Compre $quantity de $categoryNames e ganhe $rewardQuantity $productName"
     }
@@ -212,6 +216,7 @@ class PopupQuestFragment : DialogFragment() {
     private fun saveQuest(quest: Quest) {
         val questRef = FirebaseDatabase.getInstance().getReference("quests").push()
         quest.id = questRef.key ?: ""
+
         questRef.setValue(quest).addOnCompleteListener {
             if (it.isSuccessful) {
                 Toast.makeText(requireContext(), "Missão criada com sucesso!", Toast.LENGTH_SHORT).show()

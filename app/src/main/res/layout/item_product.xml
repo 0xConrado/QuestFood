@@ -4,6 +4,7 @@
     android:background="@drawable/product_card_background"
     android:padding="8dp">
 
+    <!-- Imagem do produto -->
     <ImageView
         android:id="@+id/productImage"
         android:layout_width="100dp"
@@ -11,6 +12,7 @@
         android:src="@drawable/placeholder_image"
         android:scaleType="centerCrop" />
 
+    <!-- Detalhes do produto -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,6 +21,7 @@
         android:layout_toEndOf="@id/productImage"
         android:layout_alignParentTop="true">
 
+        <!-- Badge de Promoção e Best Seller -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,6 +49,7 @@
                 android:visibility="gone" />
         </LinearLayout>
 
+        <!-- Título e descrição do produto -->
         <TextView
             android:id="@+id/productTitle"
             android:layout_width="wrap_content"
@@ -64,6 +68,7 @@
             android:text="Descrição do produto"
             android:textColor="@color/gray" />
 
+        <!-- Preço do produto -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -97,6 +102,7 @@
             android:paddingTop="4dp" />
     </LinearLayout>
 
+    <!-- Controles de admin (editar e excluir) -->
     <LinearLayout
         android:id="@+id/adminControls"
         android:layout_width="wrap_content"

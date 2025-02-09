@@ -43,7 +43,7 @@
         android:paddingTop="4dp"/>
 
     <Button
-        android:id="@+id/receiveRewardButton"
+        android:id="@+id/receiveButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Receber Recompensa"

@@ -1,6 +1,7 @@
 package com.quest.food.ui.quest
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,32 +28,37 @@ class QuestFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Inicializando o ViewModel
+        questViewModel = ViewModelProvider(requireActivity()).get(QuestViewModel::class.java)
+
+        // Forçar a atualização das quests
+        questViewModel.loadQuests()
+
         val view = inflater.inflate(R.layout.fragment_quest, container, false)
 
         recyclerView = view.findViewById(R.id.recyclerViewQuests)
         createQuestButton = view.findViewById(R.id.createQuestButton)
 
-        questViewModel = ViewModelProvider(this).get(QuestViewModel::class.java)
-
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        // ✅ Ajustado para atualizar o progresso corretamente e abrir o RewardPopupFragment quando necessário
+        // Inicializar o adapter
         questAdapter = QuestAdapter(
             emptyList(),
-            onQuestProgressUpdate = { questId, progress ->
-                questViewModel.updateQuestProgress(questId, progress)
-            },
+            onQuestProgressUpdate = { _, _ -> }, // Ignora atualizações desnecessárias
             onQuestCompleted = { quest ->
-                showRewardPopup(quest)
+                showRewardPopup(quest) // Exibe o RewardPopupFragment
             }
         )
 
         recyclerView.adapter = questAdapter
 
+        // Observar as quests do ViewModel
         questViewModel.quests.observe(viewLifecycleOwner) { quests ->
+            Log.d("QuestFragment", "Atualizando RecyclerView com ${quests.size} quests")
             questAdapter.updateQuests(quests)
         }
 
+        // Botão para criar uma nova quest
         createQuestButton.setOnClickListener {
             val popupQuestFragment = PopupQuestFragment()
             popupQuestFragment.show(childFragmentManager, "popupQuest")
@@ -62,17 +68,26 @@ class QuestFragment : Fragment() {
     }
 
     private fun showRewardPopup(quest: Quest) {
-        if (!isAdded || quest.id.isEmpty()) {
+        if (!isAdded || quest.id.isEmpty() || quest.rewardClaimed) {
             return
         }
 
+        // Pegando o nome da recompensa diretamente da instância da quest
+        val rewardProductName = quest.rewardProductName ?: "Produto de Recompensa"
+
+        // Pegando o nome da categoria diretamente da instância da quest
+        val rewardCategoryNames = quest.rewardCategoryNames ?: "Categoria de Recompensa Não Definida"
+
         val popup = RewardPopupFragment.newInstance(
-            questId = quest.id, // ✅ Agora passamos corretamente o questId
+            questId = quest.id,
             rewardProductId = quest.rewardProductId,
+            rewardProductName = rewardProductName,
             rewardQuantity = quest.rewardQuantity,
-            expGain = quest.exp,
-            rewardImageUrl = quest.rewardImageUrl
+            expGain = quest.exp.toDouble(),
+            rewardImageUrl = quest.rewardImageUrl,
+            rewardCategoryNames = rewardCategoryNames // Passando o nome da categoria para o fragmento
         )
+
         popup.show(childFragmentManager, "rewardPopup")
     }
 }

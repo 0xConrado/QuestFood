@@ -64,6 +64,11 @@ class CategoryViewModel : ViewModel() {
         }
     }
 
+    // Função para verificar se o usuário é admin
+    fun isAdmin(userRole: String?): Boolean {
+        return userRole?.equals("admin", ignoreCase = true) == true
+    }
+
     fun deleteCategory(category: CategoryMenuItem) {
         if (category.id.isNotEmpty()) {
             database.child(category.id).removeValue().addOnCompleteListener {

@@ -27,6 +27,11 @@ class ProductFragment : Fragment() {
     private lateinit var adapter: ProductAdapter
     private var categoryId: String = ""
 
+    override fun onResume() {
+        productViewModel.checkAdminStatus()
+        super.onResume()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,23 +47,27 @@ class ProductFragment : Fragment() {
 
         setupProductAdapter()
 
-        // ✅ Listener para recarregar produtos após fechar o diálogo
+        // Listener para recarregar produtos após fechar o diálogo
         setFragmentResultListener("refreshProducts") { _, _ ->
             productViewModel.loadProductsForCategory(categoryId)
         }
 
         loadCategoryData()
 
+        // Configuração do filtro de busca de produtos
         binding.searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                adapter.filterProducts(s.toString())
+                productViewModel.filterProducts(s.toString()) // Aplica o filtro nos produtos com base no texto digitado
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
     }
 
     private fun loadCategoryData() {
+        // Carregar dados da categoria e produtos
         productViewModel.loadCategoryDetails(categoryId)
         productViewModel.loadProductsForCategory(categoryId)
 
@@ -75,16 +84,17 @@ class ProductFragment : Fragment() {
                 .into(binding.categoryImage)
         }
 
+        // Observador para verificar se o usuário é administrador
         productViewModel.isAdmin.observe(viewLifecycleOwner) { isAdmin ->
-            binding.addProductButton.visibility = if (isAdmin) View.VISIBLE else View.GONE
-            binding.addProductButton.setOnClickListener { showAddProductDialog(categoryId) }
+            // Atualiza a visibilidade dos botões de editar e excluir nos itens do adapter
+            adapter.updateAdminStatus(isAdmin)
         }
     }
 
     private fun setupProductAdapter() {
         adapter = ProductAdapter(
             products = mutableListOf(),
-            isAdmin = productViewModel.isAdmin.value ?: false,
+            isAdmin = productViewModel.isAdmin.value ?: false,  // Inicializa com o valor atual
             onEditProduct = { product -> showEditProductDialog(product) },
             onDeleteProduct = { product -> confirmDeleteProduct(product) },
             onViewProductDetails = { product -> showProductDetailFragment(product) }
@@ -118,7 +128,7 @@ class ProductFragment : Fragment() {
             .setMessage("Tem certeza que deseja excluir ${product.name}?")
             .setPositiveButton("SIM") { _, _ ->
                 productViewModel.deleteProduct(categoryId, product)
-                productViewModel.loadProductsForCategory(categoryId) // ✅ Atualiza a lista após exclusão
+                productViewModel.loadProductsForCategory(categoryId) // Atualiza a lista após exclusão
             }
             .setNegativeButton("CANCELAR", null)
             .show()

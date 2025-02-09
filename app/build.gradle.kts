@@ -59,11 +59,14 @@ dependencies {
 
     // Glide para carregamento de imagens
     implementation("com.github.bumptech.glide:glide:4.15.1")
-    implementation(libs.firebase.firestore.ktx) // Firestore do Firebase
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.play.services.analytics.impl) // Firestore do Firebase
     kapt("com.github.bumptech.glide:compiler:4.15.1") // Glide KAPT
 
     // Material Design
     implementation("com.google.android.material:material:1.8.0")
+
+    implementation("com.google.android.gms:play-services-base:17.6.0")
 
     // Jetpack Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.4")

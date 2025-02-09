@@ -1,5 +1,6 @@
 package com.quest.food.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +14,8 @@ import com.quest.food.model.Quest
 
 class QuestAdapter(
     private var quests: List<Quest>,
-    private val onQuestProgressUpdate: (String, Int) -> Unit, // ✅ Adicionado parâmetro
-    private val onQuestCompleted: (Quest) -> Unit // ✅ Parâmetro para missão concluída
+    private val onQuestProgressUpdate: (String, Int) -> Unit, // Atualiza progresso da missão
+    private val onQuestCompleted: (Quest) -> Unit // Chamada quando a missão é concluída
 ) : RecyclerView.Adapter<QuestAdapter.QuestViewHolder>() {
 
     inner class QuestViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -33,25 +34,46 @@ class QuestAdapter(
     override fun onBindViewHolder(holder: QuestViewHolder, position: Int) {
         val quest = quests[position]
 
+        // Logs para depuração
+        Log.d("QuestAdapter", "Quest ID: ${quest.id}, currentProgress: ${quest.currentProgress}, quantity: ${quest.quantity}, isRewardClaimed: ${quest.rewardClaimed}")
+
+        // Configurar os dados da quest
         holder.questTitle.text = quest.title
         holder.questProgressBar.max = quest.quantity
         holder.questProgressBar.progress = quest.currentProgress
         holder.questProgressText.text = "${quest.currentProgress}/${quest.quantity} Tarefas concluídas"
 
+        // Carregar a imagem da recompensa usando Glide
         if (quest.rewardImageUrl.isNotEmpty()) {
             Glide.with(holder.itemView.context)
                 .load(quest.rewardImageUrl)
                 .into(holder.questImage)
         }
 
-        // Verifica se a missão foi concluída
-        if (quest.currentProgress >= quest.quantity) {
-            holder.questStatusIcon.setImageResource(R.drawable.giftbox_open) // Ícone de missão concluída
-            holder.questStatusIcon.setOnClickListener {
-                onQuestCompleted(quest)
+        // Atualizar o status do ícone
+        updateQuestStatus(holder, quest)
+
+        // Atualizar o progresso da missão (ignorar chamadas desnecessárias)
+        onQuestProgressUpdate(quest.id, quest.currentProgress)
+    }
+
+    private fun updateQuestStatus(holder: QuestViewHolder, quest: Quest) {
+        when {
+            quest.rewardClaimed -> {
+                holder.questStatusIcon.setImageResource(R.drawable.gift_box_received) // Recompensa recebida
+                holder.questStatusIcon.setOnClickListener(null) // Desativa clique
             }
-        } else {
-            holder.questStatusIcon.setImageResource(R.drawable.giftbox) // Ícone de bloqueado
+            quest.currentProgress >= quest.quantity -> {
+                holder.questStatusIcon.setImageResource(R.drawable.gift_box_open) // Missão concluída
+                holder.questStatusIcon.setOnClickListener {
+                    Log.d("QuestAdapter", "Quest status icon clicked. Opening RewardPopupFragment for quest ID: ${quest.id}")
+                    onQuestCompleted(quest) // Notifica o fragmento para abrir o RewardPopupFragment
+                }
+            }
+            else -> {
+                holder.questStatusIcon.setImageResource(R.drawable.gift_box) // Missão em andamento
+                holder.questStatusIcon.setOnClickListener(null) // Desativa clique
+            }
         }
     }
 
@@ -59,6 +81,6 @@ class QuestAdapter(
 
     fun updateQuests(newQuests: List<Quest>) {
         quests = newQuests
-        notifyDataSetChanged()
+        notifyDataSetChanged() // Atualiza a lista de quests no RecyclerView
     }
 }

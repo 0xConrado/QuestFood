@@ -92,7 +92,7 @@ class OrderViewModel : ViewModel() {
         questDatabase.get().addOnSuccessListener { snapshot ->
             for (questSnapshot in snapshot.children) {
                 val quest = questSnapshot.getValue(Quest::class.java)
-                if (quest != null && !quest.isCompleted) {
+                if (quest != null && !quest.completed) {
                     val matchingItemsCount = purchasedItems
                         .filter { it.categoryId == quest.rewardCategoryId }
                         .sumOf { it.quantity.toInt() } // ✅ Soma correta
@@ -113,11 +113,11 @@ class OrderViewModel : ViewModel() {
             val quest = snapshot.getValue(Quest::class.java)
             if (quest != null) {
                 val newProgress = (quest.currentProgress ?: 0) + increment
-                val isCompleted = newProgress >= maxProgress
+                val completed = newProgress >= maxProgress
 
                 val updates = mapOf(
                     "currentProgress" to newProgress,
-                    "isCompleted" to isCompleted
+                    "completed" to completed
                 )
 
                 questRef.updateChildren(updates).addOnSuccessListener {

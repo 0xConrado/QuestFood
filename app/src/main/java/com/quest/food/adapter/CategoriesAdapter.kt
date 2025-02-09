@@ -79,14 +79,20 @@ class CategoriesAdapter(
                 it.findNavController().navigate(R.id.action_homeFragment_to_productListFragment, bundle)
             }
 
+            // Controlando a visibilidade dos botões de admin
             binding.adminControls.visibility = if (isAdmin) View.VISIBLE else View.GONE
 
+            // Configuração dos botões de editar e excluir
             binding.buttonEditCategory.setOnClickListener {
-                onEditCategory(category)
+                if (isAdmin) {
+                    onEditCategory(category)
+                }
             }
 
             binding.buttonDeleteCategory.setOnClickListener {
-                showDeleteConfirmation(category)
+                if (isAdmin) {
+                    showDeleteConfirmation(category)
+                }
             }
         }
 

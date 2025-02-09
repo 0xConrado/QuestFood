@@ -57,7 +57,7 @@
         android:id="@+id/questStatusIcon"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:src="@drawable/giftbox"
+        android:src="@drawable/gift_box"
         android:contentDescription="Quest Status Icon" />
 
 </LinearLayout>
